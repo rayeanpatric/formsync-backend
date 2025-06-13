@@ -46,10 +46,12 @@ A real-time collaborative form filling application that allows multiple users to
 This application is configured to be deployed to Vercel. Follow these steps:
 
 1. **Set up a PostgreSQL Database**
+
    - Create a database with a provider like [Neon](https://neon.tech/), [Supabase](https://supabase.com/), or any PostgreSQL hosting service
    - Make sure your database is accessible from the internet
 
 2. **Deploy to Vercel**
+
    - Connect your GitHub repository to Vercel
    - Add the following environment variables in your Vercel project settings:
      - `DATABASE_URL`: Your PostgreSQL connection string (should start with `postgresql://`)
@@ -57,6 +59,7 @@ This application is configured to be deployed to Vercel. Follow these steps:
      - `NODE_ENV`: production
 
 3. **Deploy**
+
    - Vercel will automatically run:
      - `prisma generate` to generate the Prisma client
      - `prisma db push` to update the database schema (if needed)
