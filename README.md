@@ -37,7 +37,7 @@ A real-time collaborative form filling application that allows multiple users to
 
 - **RESTful API**: Complete backend API for form management
 - **Socket.IO Integration**: Real-time communication between clients
-- **SQLite Database**: Lightweight database with Prisma ORM
+- **PostgreSQL Database**: Cloud-hosted NeonDB with Prisma ORM
 - **Docker Support**: Easy deployment with Docker and Docker Compose
 
 ## Quick Start
@@ -374,7 +374,7 @@ The seed script creates:
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 - **Backend**: Node.js, Express.js
-- **Database**: SQLite with Prisma ORM
+- **Database**: PostgreSQL (NeonDB) with Prisma ORM
 - **Real-time**: Socket.IO
 - **DevOps**: Docker, Docker Compose
 - **Development**: Nodemon for hot reloading
@@ -426,15 +426,15 @@ Alternatively, use the PowerShell script which will automatically start the serv
 # Select option 7 - Run API tests
 ```
 
-### Postman Testing
+### API Testing
 
-For manual API testing, we've included a Postman collection:
+For manual API testing:
 
-1. Import `postman-collection.json` into Postman
-2. Make sure the server is running
-3. Execute requests individually or run the entire collection
+1. Make sure the server is running
+2. Use tools like Postman, Insomnia, or cURL to test the API endpoints
+3. Refer to the API documentation above for available endpoints
 
-See [POSTMAN_TESTING.md](POSTMAN_TESTING.md) for detailed instructions.
+See [POSTMAN_TESTING.md](POSTMAN_TESTING.md) for additional testing guidelines.
 
 ### UI Testing
 
@@ -457,10 +457,10 @@ To manually test the UI components:
 npx prisma generate
 ```
 
-**Database not migrated:**
+**Database schema not pushed:**
 
 ```bash
-npm run prisma:migrate
+npx prisma db push
 ```
 
 **Port already in use:**
@@ -482,7 +482,7 @@ docker-compose up --build
 
 ## Known Limitations
 
-- Single database file (SQLite) - suitable for development/small deployments
+- Cloud-hosted PostgreSQL database (NeonDB) - suitable for production deployments
 - No user authentication/authorization beyond name selection
 - Field types limited to text, number, and dropdown
 - No file upload support

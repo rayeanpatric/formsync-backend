@@ -16,9 +16,6 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
-# Create database directory
-RUN mkdir -p /app/prisma
-
 # Expose app port
 EXPOSE 3000
 

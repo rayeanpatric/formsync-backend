@@ -14,9 +14,17 @@ if (-not (Test-Path ".\package.json")) {
     exit 1
 }
 
-# Check if setup has been run
-if (-not (Test-Path ".\prisma\dev.db")) {
-    Write-Host "Database not found! Please run setup first:" -ForegroundColor Yellow
+# Check if .env file exists with DATABASE_URL
+if (-not (Test-Path ".\.env") -or -not (Get-Content ".\.env" | Select-String "DATABASE_URL")) {
+    Write-Host "Database configuration not found in .env file!" -ForegroundColor Red
+    Write-Host "Please ensure your .env file contains a valid DATABASE_URL for NeonDB." -ForegroundColor Yellow
+    Write-Host ""
+    exit 1
+}
+
+# Check if setup has been run by checking if Prisma client exists
+if (-not (Test-Path ".\node_modules\@prisma\client")) {
+    Write-Host "Prisma client not found! Please run setup first:" -ForegroundColor Yellow
     Write-Host "    .\setup.bat" -ForegroundColor Cyan
     Write-Host ""
     

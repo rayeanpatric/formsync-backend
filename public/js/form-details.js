@@ -20,7 +20,7 @@ const elements = {
   adminActions: document.getElementById("admin-actions"),
   editFormBtn: document.getElementById("edit-form-btn"),
   deleteFormBtn: document.getElementById("delete-form-btn"),
-  openPrismaBtn: document.getElementById("open-prisma-btn"),
+  // openPrismaBtn removed
   userInfo: document.getElementById("current-user"),
   loginButton: document.getElementById("login-button"),
   logoutButton: document.getElementById("logout-button"),
@@ -129,12 +129,7 @@ function setupEventListeners() {
       showDeleteConfirmation();
     });
   }
-
-  if (elements.openPrismaBtn) {
-    elements.openPrismaBtn.addEventListener("click", () => {
-      openFormInPrismaStudio();
-    });
-  }
+  // Database View button removed
 
   // Setup delete modal events
   if (elements.deleteModal) {
@@ -410,24 +405,7 @@ async function deleteForm() {
   }
 }
 
-// Open a form in Prisma Studio
-function openFormInPrismaStudio() {
-  if (!detailsState.formId) return;
-
-  // Prisma Studio typically runs on port 5555
-  const prismaStudioUrl = `http://localhost:5555`;
-
-  // First, open Prisma Studio in a new tab
-  const newTab = window.open(prismaStudioUrl, "_blank");
-  // Alert the user with instructions on how to find the form
-  setTimeout(() => {
-    showNotification(
-      `To view the form in Prisma Studio: 1. Click on the "Form" table in the left sidebar 2. Find the form with ID: ${detailsState.formId} 3. Click on it to view details`,
-      "info",
-      7000
-    );
-  }, 500);
-}
+// Database View functionality removed
 
 // Logout user
 function logoutUser() {
