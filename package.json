@@ -11,7 +11,9 @@
     "prisma:seed": "node prisma/seed.js",
     "prisma:reset": "prisma migrate reset --force",
     "db:seed": "node prisma/seed.js",
-    "test": "node test-api.js"
+    "test": "node test-api.js",
+    "vercel-build": "prisma generate && prisma db push",
+    "db:check": "node vercel-db-check.js"
   },
   "keywords": [
     "collaborative",
