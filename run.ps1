@@ -42,16 +42,14 @@ if (-not (Test-Path ".\node_modules\@prisma\client")) {
 }
 
 # Display menu of options
-function Show-Menu {
-    Write-Host "Menu Options:" -ForegroundColor Cyan
+function Show-Menu {    Write-Host "Menu Options:" -ForegroundColor Cyan
     Write-Host "------------------------" -ForegroundColor Cyan
     Write-Host "1. Start development server"
     Write-Host "2. Generate Prisma client"
     Write-Host "3. Push schema to database"
     Write-Host "4. Seed database"
     Write-Host "5. Run database tests"
-    Write-Host "6. Open Prisma Studio"
-    Write-Host "7. Migrate responses from ID to label format"
+    Write-Host "6. Migrate responses from ID to label format"
     Write-Host "Q. Quit"
     Write-Host "------------------------" -ForegroundColor Cyan
     Write-Host ""
@@ -97,11 +95,6 @@ function Test-Database {
     node test-db-connection.js
 }
 
-function Open-PrismaStudio {
-    Write-Host "Opening Prisma Studio..." -ForegroundColor Green
-    Start-Process -FilePath "npx" -ArgumentList "prisma studio"
-}
-
 function Migrate-Responses {
     Write-Host "Migrating responses from ID to label format..." -ForegroundColor Green
     node migrate-response-format.js
@@ -118,20 +111,18 @@ do {
     $choice = Read-Host "Enter your choice"
     Write-Host ""
     
-    switch ($choice) {
-        "1" { Start-DevServer; break }
+    switch ($choice) {        "1" { Start-DevServer; break }
         "2" { Generate-PrismaClient; break }
         "3" { Push-Schema; break }
         "4" { Seed-Database; break }
         "5" { Test-Database; break }
-        "6" { Open-PrismaStudio; break }
-        "7" { Migrate-Responses; break }
+        "6" { Migrate-Responses; break }
         "Q" { exit 0 }
         "q" { exit 0 }
         default { Write-Host "Invalid option. Please try again." -ForegroundColor Yellow }
     }
     
-    if ($choice -ne "1" -and $choice -ne "6" -and $choice -ne "q" -and $choice -ne "Q") {
+    if ($choice -ne "1" -and $choice -ne "q" -and $choice -ne "Q") {
         Write-Host ""
         Read-Host "Press Enter to continue"
         Clear-Host

@@ -5,6 +5,7 @@ yarn-error.log*
 .git
 .gitignore
 README.md
+docs
 .env.local
 .env.development.local
 .env.test.local
@@ -24,4 +25,3 @@ test-api.js
 postman-collection.json
 run.ps1
 run-simple.ps1
-IMPLEMENTATION_SUMMARY.md

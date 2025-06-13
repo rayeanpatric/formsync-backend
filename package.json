@@ -10,7 +10,6 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node prisma/seed.js",
     "prisma:reset": "prisma migrate reset --force",
-    "prisma:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
     "test": "node test-api.js"
   },

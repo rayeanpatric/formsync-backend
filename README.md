@@ -15,7 +15,6 @@ A real-time collaborative form filling application that allows multiple users to
 - **Dynamic Form Builder**: Create forms with text, number, and dropdown fields (Admin only)
 - **Form Editing**: Edit existing forms and their fields (Admin only)
 - **Form Deletion**: Remove forms from the system with confirmation (Admin only)
-- **Form Inspection**: View forms in Prisma Studio for detailed inspection (Admin only)
 - **Form Filling**: All users can fill and submit forms
 
 ### Real-time Collaboration
@@ -306,7 +305,6 @@ npm run prisma:generate  # Generate Prisma client
 npm run prisma:migrate   # Run database migrations
 npm run prisma:seed      # Seed database with sample data
 npm run prisma:reset     # Reset database (WARNING: deletes all data)
-npm run prisma:studio    # Open Prisma Studio (database GUI)
 ```
 
 ## Docker Commands
@@ -434,7 +432,7 @@ For manual API testing:
 2. Use tools like Postman, Insomnia, or cURL to test the API endpoints
 3. Refer to the API documentation above for available endpoints
 
-See [POSTMAN_TESTING.md](POSTMAN_TESTING.md) for additional testing guidelines.
+See [docs/POSTMAN_TESTING.md](docs/POSTMAN_TESTING.md) for additional testing guidelines.
 
 ### UI Testing
 

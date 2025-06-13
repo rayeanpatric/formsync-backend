@@ -120,8 +120,7 @@ Capabilities: Fill forms, collaborative editing
 2. Create a new form
 3. Delete the form → Confirm deletion in the modal
 4. Try to access deleted form → Should not be accessible
-5. View form in Prisma Studio → Check if form data is present
-6. Ensure UI buttons are intuitive and properly styled
+5. Ensure UI buttons are intuitive and properly styled
 
 ---
 
