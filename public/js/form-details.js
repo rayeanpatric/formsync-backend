@@ -348,18 +348,13 @@ function renderFormResponses() {
         } catch (e) {
           console.error("Error parsing response data:", e);
         }
-      }
-
-      // Create a field entry for each response field
+      } // Create a field entry for each response field
       Object.entries(responseData).forEach(([key, value]) => {
-        // Find corresponding field label if possible
-        const field = detailsState.formData.fields.find((f) => f.id === key);
-        const label = field ? field.label : key;
-
+        // The key should already be the field label since we modified the backend
         const fieldElement = document.createElement("div");
         fieldElement.className = "response-field";
         fieldElement.innerHTML = `
-                    <div class="response-field-label">${label}:</div>
+                    <div class="response-field-label">${key}:</div>
                     <div class="response-field-value">${value || "--"}</div>
                 `;
 

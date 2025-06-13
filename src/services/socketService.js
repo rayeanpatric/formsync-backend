@@ -147,7 +147,8 @@ module.exports = function (io) {
 
         // If no response exists yet, create one
         if (!response) {
-          const newResponse = { [fieldId]: value };
+          // Use the field label instead of ID as the key
+          const newResponse = { [fieldName]: value };
 
           await prisma.formResponse.create({
             data: {
@@ -156,15 +157,16 @@ module.exports = function (io) {
             },
           });
 
-          // Broadcast to all other users
+          // Broadcast to all other users (still using fieldId on the client side)
           socket.broadcast.to(`form:${formId}`).emit("field_update", {
-            fieldId,
+            fieldId, // Keep fieldId for client-side reference
             value,
           });
         } else {
           // Update existing response
           const responseData = JSON.parse(response.response);
-          responseData[fieldId] = value;
+          // Use field label as the key
+          responseData[fieldName] = value;
 
           await prisma.formResponse.update({
             where: { id: response.id },
