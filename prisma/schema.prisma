@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model - basic user information
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  forms     Form[]
+}
+
+// Form model - contains form metadata
+model Form {
+  id          String        @id @default(uuid())
+  title       String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  createdBy   User          @relation(fields: [createdById], references: [id])
+  createdById String
+  fields      Field[]
+  responses   FormResponse[]
+}
+
+// Field model - contains field definitions for forms
+model Field {
+  id        String   @id @default(uuid())
+  label     String
+  type      String   // text, number, dropdown, etc.
+  options   String?  // JSON string for dropdown options
+  required  Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId    String
+}
+
+// FormResponse model - stores form responses
+model FormResponse {
+  id        String   @id @default(uuid())
+  response  String   // JSON string containing response data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId    String
+}

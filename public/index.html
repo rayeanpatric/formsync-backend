@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Collaborative Form Filler</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>Collaborative Form Filler</h1>
+            <div class="user-info">
+                <div id="current-user" class="user-profile">Not logged in</div>
+                <button id="login-button" class="btn primary login-btn">Login</button>
+                <button id="logout-button" class="btn danger logout-btn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="home-view" class="view">
+            <div class="card">
+                <h2>Available Forms</h2>
+                <ul id="forms-list" class="list"></ul>
+                <div class="actions">
+                    <button id="create-form-button" class="btn primary" style="display: none;">
+                        <i class="fas fa-plus-circle"></i> Create New Form
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="form-builder-view" class="view" style="display: none;">
+            <div class="card">
+                <h2>Form Builder</h2>
+                <form id="form-builder-form">
+                    <div class="form-group">
+                        <label for="form-title">Form Title</label>
+                        <input type="text" id="form-title" required>
+                    </div>
+
+                    <div class="fields-container">
+                        <h3>Form Fields</h3>
+                        <div id="form-fields"></div>
+
+                        <div class="field-actions">
+                            <button type="button" class="btn secondary" id="add-text-field">Add Text Field</button>
+                            <button type="button" class="btn secondary" id="add-number-field">Add Number Field</button>
+                            <button type="button" class="btn secondary" id="add-dropdown-field">Add Dropdown</button>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" class="btn" id="cancel-form-button">Cancel</button>
+                        <button type="submit" class="btn primary">Save Form</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="form-view" class="view" style="display: none;">
+            <div class="card">
+                <div class="collaborative-info">
+                    <div class="form-header">
+                        <h2 id="form-view-title">Form</h2>
+                        <div class="collaboration-panel">
+                            <div class="active-users">
+                                <h4>👤 Active Users:</h4>
+                                <ul id="active-users-list" class="users-pills"></ul>
+                            </div>
+                            <div class="activity-log">
+                                <h4>📝 Activity:</h4>
+                                <div id="activity-log-container" class="activity-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="form-response-form">
+                    <div id="form-fields-container">
+                        <!-- Form fields will be added here dynamically -->
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" class="btn" id="back-to-home">Back to Home</button>
+                        <button type="submit" class="btn primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main> <!-- Templates for dynamic elements -->
+    <template id="field-template">
+        <div class="field-item" data-type="" data-index="">
+            <div class="field-header">
+                <h4 class="field-type"></h4>
+                <button type="button" class="btn-icon remove-field">✕</button>
+            </div>
+            <div class="form-group">
+                <label for="field-label">Field Label</label>
+                <input type="text" class="field-label" required>
+            </div>
+            <div class="form-group required-group">
+                <label>
+                    <input type="checkbox" class="field-required"> Required
+                </label>
+            </div>
+            <div class="options-container" style="display: none;">
+                <h4>Options</h4>
+                <div class="options-list"></div>
+                <button type="button" class="btn add-option">+ Add Option</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="option-template">
+        <div class="option-item">
+            <input type="text" class="option-value" placeholder="Option Value">
+            <button type="button" class="btn-icon remove-option">✕</button>
+        </div>
+    </template> <template id="form-item-template">
+        <li class="form-item">
+            <div class="form-item-content">
+                <div class="form-title"></div>
+                <div class="form-info">by <span class="creator-name"></span> (<span class="field-count"></span> fields)
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn secondary edit-form">Edit</button>
+                <button class="btn primary fill-form">Fill</button>
+            </div>
+        </li>
+    </template>
+
+    <script src="js/app.js"></script>
+    <script src="js/form-builder.js"></script>
+    <script src="js/form-filler.js"></script>
+</body>
+
+</html>

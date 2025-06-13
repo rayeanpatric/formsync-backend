@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Collaborative Form System</title>
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>🚀 Collaborative Forms</h1>
+                <h2>Welcome Back</h2>
+                <p>Please sign in to your account</p>
+            </div>
+
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+
+                <button type="submit" class="auth-btn">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+            </div>
+
+            <div class="demo-accounts">
+                <h3>Demo Accounts</h3>
+                <div class="demo-account" onclick="quickLogin('admin@example.com', 'admin123')">
+                    <strong>👑 Admin Account</strong>
+                    <small>admin@example.com / admin123</small>
+                </div>
+                <div class="demo-account" onclick="quickLogin('john@example.com', 'password123')">
+                    <strong>👤 User Account</strong>
+                    <small>john@example.com / password123</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+
+</html>
