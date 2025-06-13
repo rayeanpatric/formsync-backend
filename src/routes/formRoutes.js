@@ -7,6 +7,7 @@ const router = express.Router();
 router.post("/", formController.createForm);
 router.get("/", formController.getAllForms);
 router.get("/:id", formController.getForm);
+router.get("/:id/responses", formController.getFormResponses); // New route for getting all responses for a form
 router.put("/:id", formController.updateForm);
 router.delete("/:id", formController.deleteForm);
 

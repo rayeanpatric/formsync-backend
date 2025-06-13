@@ -8,8 +8,7 @@ class FormController {
    * Create a new form
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
-   */
-  async createForm(req, res) {
+   */ async createForm(req, res) {
     try {
       const formData = req.body;
 
@@ -22,8 +21,11 @@ class FormController {
       }
       const form = await formService.createForm(formData);
 
-      // Return the form directly to match Postman tests
-      return res.status(201).json(form);
+      // Return with success wrapper to match frontend expectations
+      return res.status(201).json({
+        success: true,
+        data: form,
+      });
     } catch (error) {
       console.error("Error creating form:", error);
       return res.status(500).json({
@@ -143,6 +145,30 @@ class FormController {
       return res.status(500).json({
         success: false,
         message: "Failed to delete form",
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * Get all responses for a specific form
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getFormResponses(req, res) {
+    try {
+      const { id } = req.params;
+      const responses = await formService.getFormResponses(id);
+
+      return res.status(200).json({
+        success: true,
+        data: responses,
+      });
+    } catch (error) {
+      console.error("Error getting form responses:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to get form responses",
         error: error.message,
       });
     }

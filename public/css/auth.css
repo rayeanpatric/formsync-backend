@@ -5,9 +5,20 @@
   box-sizing: border-box;
 }
 
+:root {
+  --smoky-white: #f5f5f5;
+  --smoky-white-darker: #e8e8e8;
+  --text-dark: #333333;
+  --text-muted: #666666;
+  --accent-gradient-start: #667eea;
+  --accent-gradient-end: #764ba2;
+  --shadow-light: rgba(0, 0, 0, 0.05);
+  --shadow-medium: rgba(0, 0, 0, 0.08);
+}
+
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--smoky-white);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -23,9 +34,10 @@ body {
 .auth-card {
   background: white;
   border-radius: 15px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px var(--shadow-medium);
   overflow: hidden;
   animation: slideUp 0.6s ease-out;
+  border: 1px solid var(--smoky-white-darker);
 }
 
 @keyframes slideUp {
@@ -42,7 +54,11 @@ body {
 .auth-header {
   text-align: center;
   padding: 40px 30px 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(
+    135deg,
+    var(--accent-gradient-start) 0%,
+    var(--accent-gradient-end) 100%
+  );
   color: white;
 }
 
@@ -75,7 +91,7 @@ body {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-dark);
   font-size: 0.9rem;
 }
 
@@ -84,16 +100,17 @@ body {
 .form-group input[type="password"] {
   width: 100%;
   padding: 12px 15px;
-  border: 2px solid #e1e5e9;
+  border: 1px solid var(--smoky-white-darker);
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: #fafbfc;
+  background: white;
+  color: var(--text-dark);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--accent-gradient-start);
   background: white;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
@@ -116,13 +133,17 @@ body {
 .checkbox-group input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #667eea;
+  accent-color: var(--accent-gradient-start);
 }
 
 .auth-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(
+    135deg,
+    var(--accent-gradient-start) 0%,
+    var(--accent-gradient-end) 100%
+  );
   color: white;
   border: none;
   border-radius: 8px;
@@ -144,30 +165,31 @@ body {
 .auth-footer {
   text-align: center;
   padding: 20px 30px 30px;
-  background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
+  background: var(--smoky-white);
+  border-top: 1px solid var(--smoky-white-darker);
 }
 
 .auth-footer a {
-  color: #667eea;
+  color: var(--accent-gradient-start);
   text-decoration: none;
   font-weight: 600;
 }
 
 .auth-footer a:hover {
   text-decoration: underline;
+  color: var(--accent-gradient-end);
 }
 
 .demo-accounts {
   padding: 20px 30px 30px;
-  background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
+  background: var(--smoky-white);
+  border-top: 1px solid var(--smoky-white-darker);
 }
 
 .demo-accounts h3 {
   text-align: center;
   margin-bottom: 15px;
-  color: #666;
+  color: var(--text-muted);
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -175,37 +197,39 @@ body {
 
 .demo-account {
   background: white;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--smoky-white-darker);
   border-radius: 8px;
   padding: 12px 15px;
   margin-bottom: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px var(--shadow-light);
 }
 
 .demo-account:hover {
-  border-color: #667eea;
-  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+  border-color: var(--accent-gradient-start);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
   transform: translateY(-1px);
 }
 
 .demo-account strong {
   display: block;
-  color: #333;
+  color: var(--text-dark);
   margin-bottom: 4px;
 }
 
 .demo-account small {
-  color: #666;
+  color: var(--text-muted);
   font-size: 0.85rem;
 }
 
 /* Error and success messages */
 .message {
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 20px;
   font-weight: 500;
+  box-shadow: 0 2px 8px var(--shadow-light);
 }
 
 .message.error {

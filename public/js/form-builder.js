@@ -99,31 +99,48 @@ window.formBuilder = (() => {
    * @param {Event} event - Form submit event
    */
   async function handleFormSubmit(event) {
-    event.preventDefault();
-
-    // Validate user authentication and role
-    if (!window.app.state.currentUser) {
-      alert("Please login first");
+    event.preventDefault(); // Validate user authentication and role from localStorage
+    let userJson = localStorage.getItem("currentUser");
+    if (!userJson) {
+      showNotification("Please login first", "error");
       window.app.showView("home-view");
       return;
     }
 
-    if (window.app.state.currentUser.role !== "admin") {
-      alert("Only admin users can create or edit forms");
-      window.app.showView("home-view");
+    try {
+      const user = JSON.parse(userJson);
+      if (!user || !user.id) {
+        showNotification(
+          "User session is invalid. Please log in again.",
+          "error"
+        );
+        localStorage.removeItem("currentUser"); // Clear invalid session
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (user.role !== "admin") {
+        showNotification("Only admin users can create or edit forms", "error");
+        window.app.showView("home-view");
+        return;
+      }
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      alert("Authentication error. Please log in again.");
+      localStorage.removeItem("currentUser"); // Clear invalid session
+      window.location.href = "login.html";
       return;
     }
-
     const title = formTitleInput.value.trim();
     if (!title) {
-      alert("Please enter a form title");
+      showNotification("Please enter a form title", "error");
       return;
     }
 
     // Get field elements
     const fieldElements = formFieldsContainer.querySelectorAll(".field-item");
     if (fieldElements.length === 0) {
-      alert("Please add at least one field to the form");
+      showNotification("Please add at least one field to the form", "error");
       return;
     }
 
@@ -136,7 +153,7 @@ window.formBuilder = (() => {
       const required = fieldElement.querySelector(".field-required").checked;
 
       if (!label) {
-        alert("All fields must have a label");
+        showNotification("All fields must have a label", "error");
         return;
       }
 
@@ -151,7 +168,7 @@ window.formBuilder = (() => {
 
         // Check if options are valid
         if (options.length === 0 || options.some((opt) => !opt)) {
-          alert("All dropdown options must have a value");
+          showNotification("All dropdown options must have a value", "error");
           return;
         }
 
@@ -162,11 +179,31 @@ window.formBuilder = (() => {
     }
 
     // Prepare form data
+    // Get current user from localStorage to ensure we have the most up-to-date data
+    const currentUserJson = localStorage.getItem("currentUser");
+    if (!currentUserJson) {
+      showNotification("Authentication error. Please log in again.", "error");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const currentUser = JSON.parse(currentUserJson);
+    if (!currentUser || !currentUser.id) {
+      showNotification(
+        "User data is incomplete. Please log in again.",
+        "error"
+      );
+      window.location.href = "login.html";
+      return;
+    }
+
     const formData = {
       title,
-      createdById: window.app.state.currentUser.id,
+      createdById: currentUser.id,
       fields,
     };
+
+    console.log("Submitting form with user ID:", currentUser.id);
 
     try {
       let response;
@@ -188,34 +225,51 @@ window.formBuilder = (() => {
       }
 
       const result = await response.json();
-
       if (result.success) {
+        // Show success notification
+        const action = currentFormId ? "updated" : "created";
+        showNotification(`Form "${title}" successfully ${action}!`, "success");
+
         // Refresh forms list and go back to home
         const forms = await window.app.fetchForms();
         window.app.renderFormsList(forms);
         window.app.showView("home-view");
         resetForm();
       } else {
-        alert(`Error: ${result.message}`);
+        showNotification(
+          `Error: ${result.message || "Unknown error"}`,
+          "error"
+        );
       }
     } catch (error) {
       console.error("Error saving form:", error);
-      alert("Failed to save the form. Please try again.");
+
+      // More detailed error information
+      if (error.message && error.message.includes("createdById")) {
+        showNotification(
+          "Error: Invalid user ID. Please log out and log back in.",
+          "error"
+        );
+      } else {
+        showNotification(
+          `Failed to save the form: ${error.message || "Please try again"}`,
+          "error"
+        );
+      }
     }
   }
   /**
    * Load an existing form for editing
    * @param {string} formId - The form ID to load
-   */
-  async function loadForm(formId) {
+   */ async function loadForm(formId) {
     // Check if user is logged in and is admin
     if (!window.app.state.currentUser) {
-      alert("Please login first");
+      showNotification("Please login first", "error");
       return;
     }
 
     if (window.app.state.currentUser.role !== "admin") {
-      alert("Only admin users can edit forms");
+      showNotification("Only admin users can edit forms", "error");
       return;
     }
 
@@ -267,11 +321,11 @@ window.formBuilder = (() => {
         // Switch to form builder view
         window.app.showView("form-builder-view");
       } else {
-        alert(`Error: ${result.message}`);
+        showNotification(`Error: ${result.message}`, "error");
       }
     } catch (error) {
       console.error("Error loading form:", error);
-      alert("Failed to load the form. Please try again.");
+      showNotification("Failed to load the form. Please try again.", "error");
     }
   }
 
@@ -286,35 +340,81 @@ window.formBuilder = (() => {
   }
   /**
    * Start creating a new form
-   */
-  function newForm() {
+   */ function newForm() {
     // Check if user is logged in and is admin
     if (!window.app.state.currentUser) {
-      alert("Please login first");
+      showNotification("Please login first", "error");
       return;
     }
 
     if (window.app.state.currentUser.role !== "admin") {
-      alert("Only admin users can create forms");
+      showNotification("Only admin users can create forms", "error");
       return;
     }
 
     resetForm();
     window.app.showView("form-builder-view");
   }
-
   // Helper function to capitalize first letter
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  // Initialize on load
-  init();
+  /**
+   * Display a notification message
+   * @param {string} message - The message to display
+   * @param {string} type - The notification type (success, error, info)
+   * @param {number} duration - How long to show the notification in ms
+   */
+  function showNotification(message, type = "info", duration = 3000) {
+    // Remove any existing notification
+    const existingNotification = document.querySelector(".notification");
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    // Create notification element
+    const notification = document.createElement("div");
+    notification.className = `notification ${type}`;
+
+    // Add appropriate icon based on notification type
+    let icon = "";
+    switch (type) {
+      case "success":
+        icon = '<i class="fas fa-check-circle"></i>';
+        break;
+      case "error":
+        icon = '<i class="fas fa-exclamation-circle"></i>';
+        break;
+      default:
+        icon = '<i class="fas fa-info-circle"></i>';
+    }
+
+    notification.innerHTML = `${icon}${message}`;
+    document.body.appendChild(notification);
+
+    // Trigger animation
+    setTimeout(() => {
+      notification.classList.add("show");
+    }, 10);
+
+    // Remove notification after duration
+    setTimeout(() => {
+      notification.style.animation = "fadeOut 0.5s forwards";
+      setTimeout(() => {
+        notification.remove();
+      }, 500);
+    }, duration);
+  }
+
+  // Do not initialize here - script-init.js will call this safely
+  // init();
 
   // Public API
   return {
     addField,
     loadForm,
     newForm,
+    init,
   };
 })();

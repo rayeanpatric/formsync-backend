@@ -14,6 +14,8 @@ A real-time collaborative form filling application that allows multiple users to
 
 - **Dynamic Form Builder**: Create forms with text, number, and dropdown fields (Admin only)
 - **Form Editing**: Edit existing forms and their fields (Admin only)
+- **Form Deletion**: Remove forms from the system with confirmation (Admin only)
+- **Form Inspection**: View forms in Prisma Studio for detailed inspection (Admin only)
 - **Form Filling**: All users can fill and submit forms
 
 ### 🤝 **Real-time Collaboration**

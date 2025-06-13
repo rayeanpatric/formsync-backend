@@ -8,6 +8,7 @@ const appState = {
   forms: [],
   users: [],
   activeUsers: new Map(), // Track active users to prevent duplicates
+  formToDelete: null, // Track the form to be deleted
 };
 
 // DOM elements
@@ -24,6 +25,12 @@ const elements = {
   createFormButton: document.getElementById("create-form-button"),
   cancelFormButton: document.getElementById("cancel-form-button"),
   backToHomeButton: document.getElementById("back-to-home"),
+  // Modal elements
+  deleteModal: document.getElementById("deleteModal"),
+  deleteFormTitle: document.getElementById("deleteFormTitle"),
+  cancelDeleteBtn: document.getElementById("cancelDelete"),
+  confirmDeleteBtn: document.getElementById("confirmDelete"),
+  modalCloseBtn: document.querySelector("#deleteModal .close"),
 };
 
 // API endpoints
@@ -216,20 +223,31 @@ function renderFormsList(forms) {
     formElement.querySelector(".creator-name").textContent =
       form.createdBy.name;
     formElement.querySelector(".field-count").textContent = form._count.fields;
+
     const editButton = formElement.querySelector(".edit-form");
     const fillButton = formElement.querySelector(".fill-form");
-
+    const deleteButton = formElement.querySelector(".delete-form");
+    const viewButton = formElement.querySelector(".view-form"); // Set up view button (available to all users) - opens form details page
+    viewButton.addEventListener("click", () => {
+      window.location.href = `form-details.html?id=${form.id}`;
+    });
+    viewButton.title = "View Form Details";
     // Only show edit button for admin users
     if (appState.currentUser && appState.currentUser.role === "admin") {
       editButton.addEventListener("click", () => {
-        window.formBuilder.loadForm(form.id);
+        handleFormEdit(form.id);
+      });
+
+      // Show and setup delete button for admin users
+      deleteButton.style.display = "flex";
+      deleteButton.addEventListener("click", () => {
+        showDeleteConfirmation(form);
       });
     } else {
       editButton.style.display = "none";
     }
-
     fillButton.addEventListener("click", () => {
-      window.formFiller.loadForm(form.id);
+      handleFormFill(form.id);
     });
 
     elements.formsList.appendChild(formElement);
@@ -241,13 +259,22 @@ async function initApp() {
   // Check if user is authenticated
   const savedUser = localStorage.getItem("currentUser");
   if (!savedUser) {
-    // Redirect to login page
-    window.location.href = "login.html";
+    console.log("No user found in localStorage, redirecting to login");
+    // Redirect to login page using replace() to avoid browser history issues
+    window.location.replace("login.html");
     return;
   }
 
-  // Set current user
-  appState.currentUser = JSON.parse(savedUser);
+  try {
+    // Set current user - catch any JSON parse errors
+    appState.currentUser = JSON.parse(savedUser);
+  } catch (error) {
+    console.error("Error parsing user data:", error);
+    // Clear invalid data and redirect to login
+    localStorage.removeItem("currentUser");
+    window.location.replace("login.html");
+    return;
+  }
 
   // Initialize Socket.IO connection
   initializeSocket();
@@ -304,6 +331,121 @@ function setupEventListeners() {
   elements.backToHomeButton.addEventListener("click", () => {
     showView("home-view");
   });
+
+  // Setup delete modal events
+  if (elements.deleteModal) {
+    // Close modal when clicking the X button
+    if (elements.modalCloseBtn) {
+      elements.modalCloseBtn.addEventListener("click", () => {
+        elements.deleteModal.style.display = "none";
+      });
+    }
+
+    // Close modal when clicking Cancel
+    if (elements.cancelDeleteBtn) {
+      elements.cancelDeleteBtn.addEventListener("click", () => {
+        elements.deleteModal.style.display = "none";
+      });
+    }
+
+    // Handle delete confirmation
+    if (elements.confirmDeleteBtn) {
+      elements.confirmDeleteBtn.addEventListener("click", () => {
+        if (appState.formToDelete) {
+          deleteForm(appState.formToDelete.id);
+        }
+      });
+    }
+  }
+
+  // Close modal when clicking outside the modal content
+  window.addEventListener("click", (event) => {
+    if (event.target === elements.deleteModal) {
+      elements.deleteModal.style.display = "none";
+    }
+  });
+}
+
+// Show delete confirmation modal
+function showDeleteConfirmation(form) {
+  if (!form || !elements.deleteModal) return;
+
+  // Store the form to delete in app state
+  appState.formToDelete = form;
+
+  // Set the form title in the modal
+  if (elements.deleteFormTitle) {
+    elements.deleteFormTitle.textContent = form.title;
+  }
+
+  // Show the modal
+  elements.deleteModal.style.display = "block";
+}
+
+// Delete a form
+async function deleteForm(formId) {
+  try {
+    if (!formId) return;
+
+    const response = await fetch(`${API.FORMS}/${formId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Hide the modal
+      elements.deleteModal.style.display = "none";
+
+      // Remove the form from the forms list
+      appState.forms = appState.forms.filter((form) => form.id !== formId);
+
+      // Re-render the forms list
+      renderFormsList(appState.forms);
+
+      // Show success message
+      alert("Form deleted successfully");
+    } else {
+      console.error("Failed to delete form:", result.message);
+      alert(`Failed to delete form: ${result.message}`);
+    }
+  } catch (error) {
+    console.error("Error deleting form:", error);
+    alert("An error occurred while deleting the form");
+  }
+}
+
+// Handle form fill transitions
+function handleFormFill(formId) {
+  // First, check if formFiller exists
+  if (window.formFiller && typeof window.formFiller.loadForm === "function") {
+    // Then call the loadForm method
+    window.formFiller.loadForm(formId);
+  } else {
+    console.error("Form filler not initialized properly");
+    alert("Unable to fill form. Please refresh the page and try again.");
+  }
+}
+
+// View form details - redirects to form details page
+function viewFormDetails(formId) {
+  // Redirect to form details page
+  window.location.href = `form-details.html?id=${formId}`;
+}
+
+// Handle form edit transitions
+function handleFormEdit(formId) {
+  // First, check if formBuilder exists
+  if (window.formBuilder && typeof window.formBuilder.loadForm === "function") {
+    // Then call the loadForm method
+    window.formBuilder.loadForm(formId);
+  } else {
+    console.error("Form builder not initialized properly");
+    alert("Unable to edit form. Please refresh the page and try again.");
+  }
 }
 
 // Load initial data
@@ -336,4 +478,8 @@ window.app = {
   showView,
   fetchForms,
   renderFormsList,
+  deleteForm,
+  viewFormDetails,
+  handleFormEdit,
+  handleFormFill,
 };

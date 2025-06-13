@@ -168,6 +168,28 @@ class FormService {
 
     return deletedForm;
   }
+  /**
+   * Get all responses for a specific form
+   * @param {string} formId - Form ID
+   * @returns {Promise<Array>} Array of responses
+   */
+  async getFormResponses(formId) {
+    const responses = await prisma.formResponse.findMany({
+      where: { formId },
+      include: {
+        form: {
+          select: { id: true, title: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    // Parse JSON response string to object
+    return responses.map((response) => ({
+      ...response,
+      data: response.response ? JSON.parse(response.response) : {},
+    }));
+  }
 }
 
 module.exports = new FormService();

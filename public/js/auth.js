@@ -1,12 +1,22 @@
 // Authentication JavaScript
 document.addEventListener("DOMContentLoaded", function () {
+  // Get the current page path
+  const currentPath = window.location.pathname;
+
   // Check if user is already logged in
   const currentUser = localStorage.getItem("currentUser");
-  if (currentUser) {
-    // Redirect to main app
+  // Only redirect if we're on the login or signup page and user is already logged in
+  if (
+    currentUser &&
+    (currentPath.includes("login.html") || currentPath.includes("signup.html"))
+  ) {
+    console.log("User already logged in, redirecting to main app");
+    // Redirect to main app without using replace to avoid navigation loop
     window.location.href = "index.html";
     return;
   }
+
+  console.log("Auth initialization complete on path:", currentPath);
 
   // Login form handler
   const loginForm = document.getElementById("login-form");
@@ -43,15 +53,14 @@ async function handleLogin(event) {
       body: JSON.stringify({ email, password }),
     });
     const result = await response.json();
-
     if (result.success) {
       // Store user data (handle both response formats: result.data or result.user)
       const userData = result.data || result.user;
       localStorage.setItem("currentUser", JSON.stringify(userData));
-      showMessage("Login successful! Redirecting...", "success");
-
-      // Redirect to main app after a short delay
+      showMessage("Login successful! Redirecting...", "success"); // Redirect to main app after a short delay
+      // Using href instead of replace to avoid potential redirect loops
       setTimeout(() => {
+        console.log("Login successful, redirecting to index.html");
         window.location.href = "index.html";
       }, 1000);
     } else {

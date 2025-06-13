@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Form Details - Collaborative Form Filler</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>Form Details</h1>
+            <div class="user-info">
+                <div id="current-user" class="user-profile">Not logged in</div>
+                <button id="login-button" class="btn primary login-btn">Login</button>
+                <button id="logout-button" class="btn danger logout-btn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="form-details-view" class="view">
+            <div class="card">
+                <div class="back-action">
+                    <button id="back-to-home" class="btn secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Forms
+                    </button>
+                </div>
+                <div class="form-details-header">
+                    <h2 id="form-details-title">Loading Form Details...</h2>
+                    <div class="form-meta">
+                        <p>Created by: <span id="form-creator">...</span></p>
+                        <p>Created on: <span id="form-created-date">...</span></p>
+                        <p>ID: <span id="form-id">...</span></p>
+                    </div>
+                </div>
+
+                <div class="form-fields-preview">
+                    <h3>Form Fields</h3>
+                    <div id="form-fields-list" class="fields-list">
+                        <div class="loading-spinner">Loading fields...</div>
+                    </div>
+                </div>
+
+                <div class="responses-section">
+                    <h3>Form Responses</h3>
+                    <div id="form-responses-list" class="responses-list">
+                        <div class="loading-spinner">Loading responses...</div>
+                    </div>
+                </div>
+                <div class="admin-actions" id="admin-actions" style="display: none;">
+                    <h3>Admin Actions</h3>
+                    <div class="btn-group">
+                        <button id="edit-form-btn" class="btn secondary">
+                            <i class="fas fa-edit"></i> Edit Form
+                        </button>
+                        <button id="delete-form-btn" class="btn danger">
+                            <i class="fas fa-trash-alt"></i> Delete Form
+                        </button>
+                        <button id="open-prisma-btn" class="btn">
+                            <i class="fas fa-database"></i> Database View
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete confirmation modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3>
+            </div>
+            <p>Are you sure you want to delete this form? This action cannot be undone.</p>
+            <p><strong>Form: </strong><span id="deleteFormTitle"></span></p>
+            <div class="modal-actions">
+                <button id="cancelDelete" class="btn secondary">Cancel</button>
+                <button id="confirmDelete" class="btn danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/form-details.js"></script>
+</body>
+
+</html>
