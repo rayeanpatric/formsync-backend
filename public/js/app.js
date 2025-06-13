@@ -404,17 +404,15 @@ async function deleteForm(formId) {
       appState.forms = appState.forms.filter((form) => form.id !== formId);
 
       // Re-render the forms list
-      renderFormsList(appState.forms);
-
-      // Show success message
-      alert("Form deleted successfully");
+      renderFormsList(appState.forms); // Show success message
+      showNotification("Form deleted successfully", "success");
     } else {
       console.error("Failed to delete form:", result.message);
-      alert(`Failed to delete form: ${result.message}`);
+      showNotification(`Failed to delete form: ${result.message}`, "error");
     }
   } catch (error) {
     console.error("Error deleting form:", error);
-    alert("An error occurred while deleting the form");
+    showNotification("An error occurred while deleting the form", "error");
   }
 }
 
@@ -426,7 +424,10 @@ function handleFormFill(formId) {
     window.formFiller.loadForm(formId);
   } else {
     console.error("Form filler not initialized properly");
-    alert("Unable to fill form. Please refresh the page and try again.");
+    showNotification(
+      "Unable to fill form. Please refresh the page and try again.",
+      "error"
+    );
   }
 }
 
@@ -444,7 +445,10 @@ function handleFormEdit(formId) {
     window.formBuilder.loadForm(formId);
   } else {
     console.error("Form builder not initialized properly");
-    alert("Unable to edit form. Please refresh the page and try again.");
+    showNotification(
+      "Unable to edit form. Please refresh the page and try again.",
+      "error"
+    );
   }
 }
 
@@ -469,6 +473,48 @@ function logoutUser() {
   window.location.href = "login.html";
 }
 
+// Global notification function
+function showNotification(message, type = "info", duration = 3000) {
+  // Remove any existing notification
+  const existingNotification = document.querySelector(".notification");
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
+  // Create notification element
+  const notification = document.createElement("div");
+  notification.className = `notification ${type}`;
+
+  // Add appropriate icon based on notification type
+  let icon = "";
+  switch (type) {
+    case "success":
+      icon = '<i class="fas fa-check-circle"></i>';
+      break;
+    case "error":
+      icon = '<i class="fas fa-exclamation-circle"></i>';
+      break;
+    default:
+      icon = '<i class="fas fa-info-circle"></i>';
+  }
+
+  notification.innerHTML = `${icon}${message}`;
+  document.body.appendChild(notification);
+
+  // Trigger animation
+  setTimeout(() => {
+    notification.classList.add("show");
+  }, 10);
+
+  // Remove notification after duration
+  setTimeout(() => {
+    notification.style.animation = "fadeOut 0.5s forwards";
+    setTimeout(() => {
+      notification.remove();
+    }, 500);
+  }, duration);
+}
+
 // When DOM is fully loaded, initialize the app
 document.addEventListener("DOMContentLoaded", initApp);
 
@@ -482,4 +528,5 @@ window.app = {
   viewFormDetails,
   handleFormEdit,
   handleFormFill,
+  showNotification, // Expose showNotification function
 };

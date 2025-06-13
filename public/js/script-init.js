@@ -16,14 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
       app: window.app,
       formBuilder: window.formBuilder,
       formFiller: window.formFiller,
-    };
-
-    // Log status
+    }; // Log status
     Object.entries(modules).forEach(([name, module]) => {
       if (module) {
-        console.log(`✅ ${name} module loaded successfully`);
+        console.log(`${name} module loaded successfully`);
       } else {
-        console.error(`❌ ${name} module failed to load`);
+        console.error(`${name} module failed to load`);
       }
     });
 

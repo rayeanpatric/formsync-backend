@@ -2,15 +2,15 @@
 
 A real-time collaborative form filling application that allows multiple users to edit form responses simultaneously, similar to Google Docs but for forms.
 
-## ✨ Features
+## Features
 
-### 🔐 **Authentication & Security**
+### Authentication & Security
 
 - **Separate Login/Signup Pages**: Beautiful authentication interface with demo accounts
 - **Role-Based Access Control**: Admin and User roles with different permissions
 - **Secure Session Management**: JWT-like authentication with localStorage
 
-### 📝 **Form Management**
+### Form Management
 
 - **Dynamic Form Builder**: Create forms with text, number, and dropdown fields (Admin only)
 - **Form Editing**: Edit existing forms and their fields (Admin only)
@@ -18,7 +18,7 @@ A real-time collaborative form filling application that allows multiple users to
 - **Form Inspection**: View forms in Prisma Studio for detailed inspection (Admin only)
 - **Form Filling**: All users can fill and submit forms
 
-### 🤝 **Real-time Collaboration**
+### Real-time Collaboration
 
 - **Real-time Collaborative Editing**: Multiple users can edit the same form simultaneously
 - **Field-Level Locking**: Visual indicators when other users are editing specific fields
@@ -26,21 +26,21 @@ A real-time collaborative form filling application that allows multiple users to
 - **Enhanced Activity Log**: Track detailed activities with user names, actions, and field names
 - **Live Synchronization**: Changes appear instantly across all connected clients
 
-### 🎨 **User Interface**
+### User Interface
 
 - **Responsive Design**: Works perfectly on desktop and mobile devices
 - **Modern UI**: Clean, professional interface with animations
 - **Role-based UI**: Different interfaces for Admin and User roles
 - **Activity Animations**: Real-time visual feedback for user actions
 
-### 🛠️ **Technical Features**
+### Technical Features
 
 - **RESTful API**: Complete backend API for form management
 - **Socket.IO Integration**: Real-time communication between clients
 - **SQLite Database**: Lightweight database with Prisma ORM
 - **Docker Support**: Easy deployment with Docker and Docker Compose
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Option 1: Using Setup Scripts (Recommended)
 
@@ -91,7 +91,7 @@ docker-compose up --build
 
 Then open [http://localhost:3000](http://localhost:3000)
 
-## 👥 **User Accounts & Authentication**
+## User Accounts & Authentication
 
 The system comes with pre-configured demo accounts for testing:
 
@@ -121,7 +121,7 @@ The system comes with pre-configured demo accounts for testing:
 - Choose to request admin access during registration
 - All new accounts default to "User" role for security
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── prisma/                 # Database schema and migrations
@@ -144,7 +144,7 @@ The system comes with pre-configured demo accounts for testing:
 └── package.json         # Node.js dependencies
 ```
 
-## 🔧 API Documentation
+## API Documentation
 
 ### Forms
 
@@ -199,7 +199,7 @@ Content-Type: application/json
 }
 ```
 
-## 🧪 **Testing the Collaborative Features**
+## Testing the Collaborative Features
 
 ### **Step-by-Step Testing Guide:**
 
@@ -252,7 +252,7 @@ Content-Type: application/json
 1. **Field Locking Behavior:**
 
    - User A clicks on "Name" field → Field locks for others
-   - User B tries to edit same field → Sees "🔒 UserA is editing" message
+   - User B tries to edit same field → Sees "UserA is editing" message
    - User A finishes editing → Field unlocks automatically
 
 2. **Activity Log Features:**
@@ -269,14 +269,14 @@ Content-Type: application/json
 
 ### **Expected Behavior:**
 
-- ✅ Only admins can create/edit forms
-- ✅ All users can fill forms collaboratively
-- ✅ Real-time field locking prevents conflicts
-- ✅ Activity log shows detailed field-level actions
-- ✅ Active users list updates without duplicates
-- ✅ Visual indicators for all collaborative actions
+- Only admins can create/edit forms
+- All users can fill forms collaboratively
+- Real-time field locking prevents conflicts
+- Activity log shows detailed field-level actions
+- Active users list updates without duplicates
+- Visual indicators for all collaborative actions
 
-## 🔄 Real-time Collaboration
+## Real-time Collaboration
 
 The system uses Socket.IO for real-time features:
 
@@ -293,11 +293,11 @@ The system uses Socket.IO for real-time features:
 ### Collaborative Features
 
 1. **Live User Presence**: See active users with role indicators (Admin/User)
-2. **Field Locking**: Fields show a 🔒 indicator when being edited by others
+2. **Field Locking**: Fields show a lock indicator when being edited by others
 3. **Real-time Updates**: Changes appear instantly for all users
 4. **Activity Feed**: Live log of user actions and form updates
 
-## 🛠️ Development Scripts
+## Development Scripts
 
 ```bash
 npm run dev          # Start development server with hot reload
@@ -309,7 +309,7 @@ npm run prisma:reset     # Reset database (WARNING: deletes all data)
 npm run prisma:studio    # Open Prisma Studio (database GUI)
 ```
 
-## 🐳 Docker Commands
+## Docker Commands
 
 ```bash
 # Build and start services
@@ -328,7 +328,7 @@ docker-compose down
 docker-compose up --build --force-recreate
 ```
 
-## 🌍 Environment Variables
+## Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -338,7 +338,7 @@ NODE_ENV=development
 DATABASE_URL="file:./dev.db"
 ```
 
-## 📊 Sample Data
+## Sample Data
 
 The seed script creates:
 
@@ -346,7 +346,7 @@ The seed script creates:
 - **3 Forms**: Customer Feedback, Event Registration, Employee Survey
 - **Sample responses** for demonstration
 
-## 🎯 Usage Guide
+## Usage Guide
 
 ### For Form Creators
 
@@ -365,12 +365,12 @@ The seed script creates:
 
 ### Collaborative Features in Action
 
-- When you click on a field, other users see a 🔒 lock indicator
+- When you click on a field, other users see a lock indicator
 - Changes you make appear instantly for other users
 - Activity log shows recent actions: "Alice joined", "Bob updated Email field"
 - User presence shows who's currently active
 
-## 🔧 Technologies Used
+## Technologies Used
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 - **Backend**: Node.js, Express.js
@@ -379,7 +379,7 @@ The seed script creates:
 - **DevOps**: Docker, Docker Compose
 - **Development**: Nodemon for hot reloading
 
-## 🚀 Deployment
+## Deployment
 
 ### Production Deployment
 
@@ -406,7 +406,7 @@ The seed script creates:
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-## 🧪 Testing
+## Testing
 
 ### API Testing
 
@@ -447,7 +447,7 @@ To manually test the UI components:
    - User: email `john@example.com`, password `password123`
 4. Test form creation (admin), form filling, and real-time collaboration
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -480,7 +480,7 @@ docker system prune -f
 docker-compose up --build
 ```
 
-## 📝 Known Limitations
+## Known Limitations
 
 - Single database file (SQLite) - suitable for development/small deployments
 - No user authentication/authorization beyond name selection
@@ -488,7 +488,7 @@ docker-compose up --build
 - No file upload support
 - No form versioning or audit trail beyond activity log
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 - User authentication (JWT, OAuth)
 - More field types (date, file upload, checkbox, radio)
@@ -500,11 +500,11 @@ docker-compose up --build
 - Email notifications
 - Mobile app
 
-## 📄 License
+## License
 
 ISC License - See package.json for details
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -514,6 +514,6 @@ ISC License - See package.json for details
 
 ---
 
-**Happy collaborative form filling! 🎉**
+**Happy collaborative form filling!**
 
 For support or questions, please check the troubleshooting section or create an issue.

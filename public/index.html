@@ -71,11 +71,11 @@
                         <h2 id="form-view-title">Form</h2>
                         <div class="collaboration-panel">
                             <div class="active-users">
-                                <h4>👤 Active Users:</h4>
+                                <h4>Active Users:</h4>
                                 <ul id="active-users-list" class="users-pills"></ul>
                             </div>
                             <div class="activity-log">
-                                <h4>📝 Activity:</h4>
+                                <h4>Activity:</h4>
                                 <div id="activity-log-container" class="activity-container"></div>
                             </div>
                         </div>
@@ -102,7 +102,7 @@
         <div class="field-item" data-type="" data-index="">
             <div class="field-header">
                 <h4 class="field-type"></h4>
-                <button type="button" class="btn-icon remove-field">✕</button>
+                <button type="button" class="btn-icon remove-field"><i class="fas fa-times"></i></button>
             </div>
             <div class="form-group">
                 <label for="field-label">Field Label</label>
@@ -124,7 +124,7 @@
     <template id="option-template">
         <div class="option-item">
             <input type="text" class="option-value" placeholder="Option Value">
-            <button type="button" class="btn-icon remove-option">✕</button>
+            <button type="button" class="btn-icon remove-option"><i class="fas fa-times"></i></button>
         </div>
     </template> <template id="form-item-template">
         <li class="form-item">
@@ -153,7 +153,7 @@
     <!-- Delete confirmation modal -->
     <div id="deleteModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close"><i class="fas fa-times"></i></span>
             <div class="modal-header">
                 <h3><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3>
             </div>

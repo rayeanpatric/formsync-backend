@@ -126,7 +126,7 @@ window.formBuilder = (() => {
       }
     } catch (error) {
       console.error("Error parsing user data:", error);
-      alert("Authentication error. Please log in again.");
+      showNotification("Authentication error. Please log in again.", "error");
       localStorage.removeItem("currentUser"); // Clear invalid session
       window.location.href = "login.html";
       return;
@@ -202,9 +202,6 @@ window.formBuilder = (() => {
       createdById: currentUser.id,
       fields,
     };
-
-    console.log("Submitting form with user ID:", currentUser.id);
-
     try {
       let response;
 

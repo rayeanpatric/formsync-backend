@@ -1,9 +1,17 @@
 const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
 async function main() {
   try {
-    console.log("Seeding database..."); // Create some users
+    console.log("Seeding database...");
+
+    // Hash passwords for demo accounts
+    const saltRounds = 12;
+    const adminPassword = await bcrypt.hash("admin123", saltRounds);
+    const userPassword = await bcrypt.hash("password123", saltRounds);
+
+    // Create some users
     const adminUser = await prisma.user.upsert({
       where: { email: "admin@example.com" },
       update: {},
@@ -11,7 +19,7 @@ async function main() {
         id: "1",
         name: "Admin User",
         email: "admin@example.com",
-        password: "admin123",
+        password: adminPassword,
         role: "admin",
       },
     });
@@ -22,7 +30,7 @@ async function main() {
         id: "2",
         name: "John Doe",
         email: "john@example.com",
-        password: "password123",
+        password: userPassword,
         role: "user",
       },
     });
@@ -34,7 +42,7 @@ async function main() {
         id: "3",
         name: "Jane Smith",
         email: "jane@example.com",
-        password: "password123",
+        password: userPassword,
         role: "user",
       },
     });
@@ -46,7 +54,7 @@ async function main() {
         id: "4",
         name: "Alice Johnson",
         email: "alice@example.com",
-        password: "password123",
+        password: userPassword,
         role: "user",
       },
     });

@@ -16,16 +16,15 @@ window.formFiller = (() => {
     try {
       // Check if user is logged in
       if (!window.app.state.currentUser) {
-        alert("Please login first");
+        window.showNotification("Please login first", "error");
         return;
       }
 
       // Fetch the form structure
       const formResponse = await fetch(`/api/forms/${formId}`);
       const formResult = await formResponse.json();
-
       if (!formResult.success) {
-        alert(`Error: ${formResult.message}`);
+        window.showNotification(`Error: ${formResult.message}`, "error");
         return;
       }
 
@@ -58,7 +57,10 @@ window.formFiller = (() => {
       window.app.showView("form-view");
     } catch (error) {
       console.error("Error loading form:", error);
-      alert("Failed to load the form. Please try again.");
+      window.showNotification(
+        "Failed to load the form. Please try again.",
+        "error"
+      );
     }
   }
 
@@ -246,16 +248,18 @@ window.formFiller = (() => {
       });
 
       const result = await response.json();
-
       if (result.success) {
-        alert("Form submitted successfully!");
+        window.showNotification("Form submitted successfully!", "success");
         window.app.showView("home-view");
       } else {
-        alert(`Error: ${result.message}`);
+        window.showNotification(`Error: ${result.message}`, "error");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Failed to submit the form. Please try again.");
+      window.showNotification(
+        "Failed to submit the form. Please try again.",
+        "error"
+      );
     }
   }
 
@@ -310,7 +314,7 @@ window.formFiller = (() => {
           lockIndicator.className = "field-lock-indicator";
           fieldGroup.appendChild(lockIndicator);
         }
-        lockIndicator.textContent = `🔒 ${lockedBy.userName} is editing`;
+        lockIndicator.textContent = `${lockedBy.userName} is editing`;
       }
     });
 

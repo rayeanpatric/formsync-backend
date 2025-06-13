@@ -26,7 +26,6 @@ class UserController {
       });
     }
   }
-
   /**
    * Get a user by ID
    * @param {Object} req - Express request object
@@ -67,13 +66,12 @@ class UserController {
       const userData = req.body;
 
       // Validate input data
-      if (!userData.name) {
+      if (!userData.name || !userData.email || !userData.password) {
         return res.status(400).json({
           success: false,
-          message: "Missing required field: name",
+          message: "Missing required fields: name, email, password",
         });
       }
-
       const user = await userService.createUser(userData);
 
       return res.status(201).json({
@@ -115,22 +113,17 @@ class UserController {
           message: "User with this email already exists",
         });
       }
-
       const userData = {
         name,
         email,
-        password, // In production, this should be hashed
+        password, // Will be hashed in userService.createUser
         role: role || "user", // Default to 'user' role
       };
-
       const user = await userService.createUser(userData);
-
-      // Remove password from response
-      const { password: _, ...userResponse } = user;
 
       return res.status(201).json({
         success: true,
-        data: userResponse,
+        data: user,
         message: "User registered successfully",
       });
     } catch (error) {
@@ -158,19 +151,19 @@ class UserController {
           success: false,
           message: "Missing required fields: email, password",
         });
-      }
-
-      // Find user by email
-      const user = await userService.getUserByEmail(email);
+      } // Find user by email (with password for authentication)
+      const user = await userService.getUserByEmailWithPassword(email);
       if (!user) {
         return res.status(401).json({
           success: false,
           message: "Invalid email or password",
         });
-      }
-
-      // Check password (in production, compare hashed passwords)
-      if (user.password !== password) {
+      } // Check password using bcrypt
+      const isPasswordValid = await userService.verifyPassword(
+        password,
+        user.password
+      );
+      if (!isPasswordValid) {
         return res.status(401).json({
           success: false,
           message: "Invalid email or password",

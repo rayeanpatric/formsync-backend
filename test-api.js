@@ -95,20 +95,20 @@ async function makeRequest(url, options = {}) {
 const BASE_URL = "http://localhost:3000/api";
 
 async function testAPI() {
-  console.log("🧪 Testing API Endpoints...\n");
+  console.log("Testing API Endpoints...\n");
 
   let allTestsPassed = true;
   let testResults = [];
 
   try {
     // Test 1: Server connectivity
-    console.log("1️⃣ Testing server connectivity...");
+    console.log("1. Testing server connectivity...");
     try {
       await makeRequest(`${BASE_URL}/users`);
-      console.log("✅ Server is running and accessible");
+      console.log("Server is running and accessible");
       testResults.push({ test: "Server Connectivity", passed: true });
     } catch (error) {
-      console.log("❌ Server is not accessible");
+      console.log("Server is not accessible");
       console.log("   Make sure the server is running on port 3000");
       testResults.push({
         test: "Server Connectivity",
@@ -120,7 +120,7 @@ async function testAPI() {
     }
 
     // Test 2: Admin login
-    console.log("\n2️⃣ Testing admin login...");
+    console.log("\n2. Testing admin login...");
     const loginResult = await makeRequest(`${BASE_URL}/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -130,12 +130,12 @@ async function testAPI() {
       }),
     });
     if (loginResult.success) {
-      console.log("✅ Admin login: SUCCESS");
+      console.log("Admin login: SUCCESS");
       const adminUser = loginResult.user; // Changed from data to user
-      console.log(`   👑 Admin user: ${adminUser.name} (${adminUser.role})`);
+      console.log(`   Admin user: ${adminUser.name} (${adminUser.role})`);
       testResults.push({ test: "Admin Login", passed: true });
     } else {
-      console.log("❌ Admin login: FAILED");
+      console.log("Admin login: FAILED");
       console.log(`   Error: ${loginResult.message || "Unknown error"}`);
       testResults.push({
         test: "Admin Login",
@@ -146,13 +146,13 @@ async function testAPI() {
     }
 
     // Test 3: Get forms
-    console.log("\n3️⃣ Testing get forms...");
+    console.log("\n3. Testing get forms...");
     const formsResult = await makeRequest(`${BASE_URL}/forms`);
 
     if (formsResult.success || Array.isArray(formsResult)) {
       const forms = formsResult.data || formsResult;
-      console.log("✅ Get forms: SUCCESS");
-      console.log(`   📋 Found ${forms.length} forms`);
+      console.log("Get forms: SUCCESS");
+      console.log(`   Found ${forms.length} forms`);
       forms.forEach((form, index) => {
         console.log(
           `      ${index + 1}. ${form.title} (${
@@ -162,7 +162,7 @@ async function testAPI() {
       });
       testResults.push({ test: "Get Forms", passed: true });
     } else {
-      console.log("❌ Get forms: FAILED");
+      console.log("Get forms: FAILED");
       console.log(`   Error: ${formsResult.message || "Unknown error"}`);
       testResults.push({
         test: "Get Forms",
@@ -173,7 +173,7 @@ async function testAPI() {
     }
 
     // Test 4: Regular user login
-    console.log("\n4️⃣ Testing regular user login...");
+    console.log("\n4. Testing regular user login...");
     const userLoginResult = await makeRequest(`${BASE_URL}/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -183,14 +183,12 @@ async function testAPI() {
       }),
     });
     if (userLoginResult.success) {
-      console.log("✅ User login: SUCCESS");
+      console.log("User login: SUCCESS");
       const regularUser = userLoginResult.user; // Changed from data to user
-      console.log(
-        `   👤 Regular user: ${regularUser.name} (${regularUser.role})`
-      );
+      console.log(`   Regular user: ${regularUser.name} (${regularUser.role})`);
       testResults.push({ test: "User Login", passed: true });
     } else {
-      console.log("❌ User login: FAILED");
+      console.log("User login: FAILED");
       console.log(`   Error: ${userLoginResult.message || "Unknown error"}`);
       testResults.push({
         test: "User Login",
@@ -201,16 +199,16 @@ async function testAPI() {
     }
 
     // Test 5: Get users
-    console.log("\n5️⃣ Testing get all users...");
+    console.log("\n5. Testing get all users...");
     const usersResult = await makeRequest(`${BASE_URL}/users`);
 
     if (usersResult.success || Array.isArray(usersResult)) {
       const users = usersResult.data || usersResult;
-      console.log("✅ Get users: SUCCESS");
+      console.log("Get users: SUCCESS");
       console.log(`   � Found ${users.length} users`);
       testResults.push({ test: "Get Users", passed: true });
     } else {
-      console.log("❌ Get users: FAILED");
+      console.log("Get users: FAILED");
       console.log(`   Error: ${usersResult.message || "Unknown error"}`);
       testResults.push({
         test: "Get Users",
@@ -222,11 +220,11 @@ async function testAPI() {
 
     // Summary
     console.log("\n" + "=".repeat(50));
-    console.log("📊 TEST SUMMARY");
+    console.log("TEST SUMMARY");
     console.log("=".repeat(50));
 
     testResults.forEach((result) => {
-      const status = result.passed ? "✅ PASS" : "❌ FAIL";
+      const status = result.passed ? "PASS" : "FAIL";
       console.log(`${status} ${result.test}`);
       if (!result.passed && result.error) {
         console.log(`     Error: ${result.error}`);
@@ -238,17 +236,17 @@ async function testAPI() {
 
     console.log("\n" + "=".repeat(50));
     if (allTestsPassed) {
-      console.log("🎉 ALL TESTS PASSED! API is working correctly.");
+      console.log("ALL TESTS PASSED! API is working correctly.");
       process.exit(0);
     } else {
       console.log(
-        `❌ ${totalTests - passedTests} out of ${totalTests} tests failed.`
+        `${totalTests - passedTests} out of ${totalTests} tests failed.`
       );
       console.log("Please check the server and database configuration.");
       process.exit(1);
     }
   } catch (error) {
-    console.error("❌ Unexpected error during testing:", error.message);
+    console.error("Unexpected error during testing:", error.message);
     console.log("\nThis might indicate:");
     console.log("  - Server is not running (start with: npm start)");
     console.log("  - Database is not set up (run: npm run prisma:seed)");

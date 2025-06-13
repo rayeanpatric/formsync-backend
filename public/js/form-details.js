@@ -402,18 +402,16 @@ async function deleteForm() {
 
     if (result.success) {
       // Hide the modal
-      elements.deleteModal.style.display = "none";
-
-      // Show success message and redirect back to home
-      alert("Form deleted successfully");
+      elements.deleteModal.style.display = "none"; // Show success message and redirect back to home
+      showNotification("Form deleted successfully", "success");
       window.location.href = "index.html";
     } else {
       console.error("Failed to delete form:", result.message);
-      alert(`Failed to delete form: ${result.message}`);
+      showNotification(`Failed to delete form: ${result.message}`, "error");
     }
   } catch (error) {
     console.error("Error deleting form:", error);
-    alert("An error occurred while deleting the form");
+    showNotification("An error occurred while deleting the form", "error");
   }
 }
 
@@ -426,11 +424,12 @@ function openFormInPrismaStudio() {
 
   // First, open Prisma Studio in a new tab
   const newTab = window.open(prismaStudioUrl, "_blank");
-
   // Alert the user with instructions on how to find the form
   setTimeout(() => {
-    alert(
-      `To view the form in Prisma Studio:\n\n1. Click on the "Form" table in the left sidebar\n2. Find the form with ID: ${detailsState.formId}\n3. Click on it to view details`
+    showNotification(
+      `To view the form in Prisma Studio: 1. Click on the "Form" table in the left sidebar 2. Find the form with ID: ${detailsState.formId} 3. Click on it to view details`,
+      "info",
+      7000
     );
   }, 500);
 }
@@ -443,6 +442,48 @@ function logoutUser() {
 
   // Redirect to login page
   window.location.href = "login.html";
+}
+
+// Global notification function
+function showNotification(message, type = "info", duration = 3000) {
+  // Remove any existing notification
+  const existingNotification = document.querySelector(".notification");
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
+  // Create notification element
+  const notification = document.createElement("div");
+  notification.className = `notification ${type}`;
+
+  // Add appropriate icon based on notification type
+  let icon = "";
+  switch (type) {
+    case "success":
+      icon = '<i class="fas fa-check-circle"></i>';
+      break;
+    case "error":
+      icon = '<i class="fas fa-exclamation-circle"></i>';
+      break;
+    default:
+      icon = '<i class="fas fa-info-circle"></i>';
+  }
+
+  notification.innerHTML = `${icon}${message}`;
+  document.body.appendChild(notification);
+
+  // Trigger animation
+  setTimeout(() => {
+    notification.classList.add("show");
+  }, 10);
+
+  // Remove notification after duration
+  setTimeout(() => {
+    notification.style.animation = "fadeOut 0.5s forwards";
+    setTimeout(() => {
+      notification.remove();
+    }, 500);
+  }, duration);
 }
 
 // When DOM is fully loaded, initialize the app
