@@ -146,8 +146,25 @@ function updateActiveUsersList(users) {
       }
 
       activeUsersList.appendChild(userElement);
+    }  });
+}
+
+// Leave the current form when navigating away
+function leaveCurrentForm() {
+  if (appState.socket && appState.currentView === "form-view" && appState.currentUser) {
+    // Try to get the current form ID from the form view
+    const formIdElement = document.querySelector("[data-form-id]");
+    const formId = formIdElement?.getAttribute("data-form-id") || window.formFiller?.currentForm?.id;
+    
+    if (formId) {
+      console.log(`👋 Leaving form ${formId}`);
+      appState.socket.emit("leave_form", {
+        formId: formId,
+        userId: appState.currentUser.id,
+        userName: appState.currentUser.name,
+      });
     }
-  });
+  }
 }
 
 // Add activity log entry
@@ -418,8 +435,9 @@ function setupEventListeners() {
   elements.cancelFormButton.addEventListener("click", () => {
     showView("home-view");
   });
-
   elements.backToHomeButton.addEventListener("click", () => {
+    // Leave the current form if we're in form view
+    leaveCurrentForm();
     showView("home-view");
   });
 
@@ -448,11 +466,25 @@ function setupEventListeners() {
       });
     }
   }
-
   // Close modal when clicking outside the modal content
   window.addEventListener("click", (event) => {
     if (event.target === elements.deleteModal) {
       elements.deleteModal.style.display = "none";
+    }
+  });
+
+  // Handle page navigation away - clean up form connections
+  window.addEventListener("beforeunload", () => {
+    leaveCurrentForm();
+  });
+
+  // Handle visibility change (tab switching, minimizing)
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      // User switched away from tab - optional: could implement timeout to leave form
+      console.log("👁️ Tab hidden - user switched away");
+    } else {
+      console.log("👁️ Tab visible - user returned");
     }
   });
 }
@@ -631,3 +663,23 @@ window.app = {
   handleFormFill,
   showNotification, // Expose showNotification function
 };
+
+// Leave the current form when navigating away
+function leaveCurrentForm() {
+  if (appState.socket && appState.currentView === "form-view" && appState.currentUser) {
+    // Try to get the current form ID from the form view
+    const formIdElement = document.querySelector("[data-form-id]");
+    const formId = formIdElement?.getAttribute("data-form-id") || window.formFiller?.currentForm?.id;
+    
+    if (formId) {
+      console.log(`👋 Leaving form ${formId}`);
+      appState.socket.emit("leave_form", {
+        formId: formId,
+        userId: appState.currentUser.id,
+        userName: appState.currentUser.name,
+      });
+    }
+  }
+}
+
+// Add activity log to the form view

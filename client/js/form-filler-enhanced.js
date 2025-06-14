@@ -41,10 +41,11 @@ window.formFiller = (() => {
       let responseData = {};
       if (responseResult.success && responseResult.data) {
         responseData = responseResult.data.response || {};
-      }
-
-      // Render form UI
+      }      // Render form UI
       renderForm(currentForm, responseData);
+
+      // Store current form ID in app state for cleanup
+      window.app.state.currentFormId = currentForm.id;
 
       // Join the form room in Socket.IO
       window.app.state.socket.emit("join_form", {
