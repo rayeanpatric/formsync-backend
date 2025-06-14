@@ -272,10 +272,19 @@ window.formFiller = (() => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(responseData),
         }
-      );
-
-      const result = await response.json();
+      );      const result = await response.json();
       if (result.success) {
+        // IMMEDIATELY remove user from active users before showing success
+        if (window.app.state.socket && window.app.state.currentUser && window.app.state.currentFormId) {
+          console.log(`🚀 FORM SUBMITTED - Removing user from active users`);
+          window.app.state.socket.emit("leave_form", {
+            formId: window.app.state.currentFormId,
+            userId: window.app.state.currentUser.id,
+            userName: window.app.state.currentUser.name,
+          });
+          window.app.state.currentFormId = null;
+        }
+        
         window.showNotification("Form submitted successfully!", "success");
         window.app.showView("home-view");
       } else {

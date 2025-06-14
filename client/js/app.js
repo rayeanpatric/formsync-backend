@@ -153,21 +153,69 @@ function updateActiveUsersList(users) {
 
 // Leave the current form when navigating away
 function leaveCurrentForm() {
-  if (
-    appState.socket &&
-    appState.currentView === "form-view" &&
-    appState.currentUser &&
-    appState.currentFormId
-  ) {
-    console.log(`👋 Leaving form ${appState.currentFormId}`);
+  console.log(`🔍 leaveCurrentForm called - checking conditions...`);
+  console.log(`  - Socket connected: ${!!appState.socket}`);
+  console.log(`  - Current view: ${appState.currentView}`);
+  console.log(`  - Current user: ${!!appState.currentUser}`);
+  console.log(`  - Current form ID: ${appState.currentFormId}`);
+  
+  if (appState.socket && appState.currentUser && appState.currentFormId) {
+    console.log(`� BACK BUTTON - Removing user ${appState.currentUser.name} from form ${appState.currentFormId}`);
+    
+    // Emit leave_form event immediately
     appState.socket.emit("leave_form", {
       formId: appState.currentFormId,
       userId: appState.currentUser.id,
       userName: appState.currentUser.name,
     });
 
-    // Clear the current form ID
+    // Clear the current form ID immediately
     appState.currentFormId = null;
+    console.log(`✅ User removal request sent, form ID cleared`);  } else {
+    console.log(`❌ Cannot leave form with currentFormId - trying fallbacks...`);
+    
+    // Try to get form ID from multiple sources as fallback
+    let formId = null;
+    
+    // Fallback 1: Check if form-filler has a current form
+    if (window.formFiller?.currentForm?.id) {
+      formId = window.formFiller.currentForm.id;
+      console.log(`  - Found form ID from formFiller: ${formId}`);
+    }
+    
+    // Fallback 2: Check DOM for form ID
+    if (!formId) {
+      const formIdElement = document.querySelector("[data-form-id]");
+      if (formIdElement) {
+        formId = formIdElement.getAttribute("data-form-id");
+        console.log(`  - Found form ID from DOM: ${formId}`);
+      }
+    }
+    
+    // Fallback 3: Check URL parameters
+    if (!formId) {
+      const urlParams = new URLSearchParams(window.location.search);
+      formId = urlParams.get('formId');
+      if (formId) {
+        console.log(`  - Found form ID from URL: ${formId}`);
+      }
+    }
+    
+    if (appState.socket && appState.currentUser && formId) {
+      console.log(`🚀 FALLBACK - Removing user ${appState.currentUser.name} from form ${formId}`);
+      
+      // Emit leave_form event immediately
+      appState.socket.emit("leave_form", {
+        formId: formId,
+        userId: appState.currentUser.id,
+        userName: appState.currentUser.name,
+      });
+
+      console.log(`✅ User removal request sent via fallback`);
+    } else {
+      console.log(`❌ Cannot leave form - missing required data after fallbacks`);
+      console.log(`    Socket: ${!!appState.socket}, User: ${!!appState.currentUser}, FormID: ${formId}`);
+    }
   }
 }
 
@@ -438,8 +486,26 @@ function setupEventListeners() {
 
   elements.cancelFormButton.addEventListener("click", () => {
     showView("home-view");
-  });
-  elements.backToHomeButton.addEventListener("click", () => {
+  });  elements.backToHomeButton.addEventListener("click", () => {
+    console.log(`🔙 Back to Home button clicked`);
+    console.log(`  - Current view: ${appState.currentView}`);
+    console.log(`  - Current form ID: ${appState.currentFormId}`);
+    
+    // Force set currentFormId if we're in form view and it's not set
+    if (appState.currentView === "form-view" && !appState.currentFormId) {
+      // Try to get form ID from URL or DOM
+      const urlParams = new URLSearchParams(window.location.search);
+      const formIdFromUrl = urlParams.get('formId');
+      const formIdFromDOM = document.querySelector("[data-form-id]")?.getAttribute("data-form-id");
+      const formIdFromFiller = window.formFiller?.currentForm?.id;
+      
+      const detectedFormId = formIdFromUrl || formIdFromDOM || formIdFromFiller;
+      if (detectedFormId) {
+        console.log(`  - Force setting currentFormId to: ${detectedFormId}`);
+        appState.currentFormId = detectedFormId;
+      }
+    }
+    
     // Leave the current form if we're in form view
     leaveCurrentForm();
     showView("home-view");
@@ -668,28 +734,31 @@ window.app = {
   showNotification, // Expose showNotification function
 };
 
-// Leave the current form when navigating away
-function leaveCurrentForm() {
-  if (
-    appState.socket &&
-    appState.currentView === "form-view" &&
-    appState.currentUser
-  ) {
-    // Try to get the current form ID from the form view
-    const formIdElement = document.querySelector("[data-form-id]");
-    const formId =
-      formIdElement?.getAttribute("data-form-id") ||
-      window.formFiller?.currentForm?.id;
-
-    if (formId) {
-      console.log(`👋 Leaving form ${formId}`);
-      appState.socket.emit("leave_form", {
-        formId: formId,
-        userId: appState.currentUser.id,
-        userName: appState.currentUser.name,
-      });
-    }
+// Debug function to test leave_form manually
+window.debugLeaveForm = function(formId) {
+  console.log(`🧪 DEBUG: Manually triggering leave_form for form ${formId}`);
+  if (appState.socket && appState.currentUser) {
+    appState.socket.emit("leave_form", {
+      formId: formId || appState.currentFormId || "test-form-id",
+      userId: appState.currentUser.id,
+      userName: appState.currentUser.name,
+    });
+    console.log(`✅ Leave form event sent`);
+  } else {
+    console.log(`❌ Cannot send leave form - missing socket or user`);
   }
-}
+};
+
+// Debug function to check current state
+window.debugAppState = function() {
+  console.log(`🔍 Current App State:`, {
+    socket: !!appState.socket,
+    socketId: appState.socket?.id,
+    currentUser: appState.currentUser,
+    currentView: appState.currentView,
+    currentFormId: appState.currentFormId,
+    formFillerFormId: window.formFiller?.currentForm?.id,
+  });
+};
 
 // Add activity log to the form view

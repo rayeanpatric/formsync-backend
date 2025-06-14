@@ -241,41 +241,52 @@ module.exports = function (io) {
           console.error("❌ Error loading form state:", error);
         }
       }, 100);
-    });
-
-    // 🚪 USER LEAVES FORM - EXPLICIT CLEANUP
+    });    // 🚪 USER LEAVES FORM - EXPLICIT CLEANUP
     socket.on("leave_form", async ({ formId, userId, userName }) => {
-      console.log(`👋 ${userName} explicitly leaving form ${formId}`);
+      console.log(`� LEAVE_FORM EVENT - ${userName} (${userId}) explicitly leaving form ${formId}`);
+      console.log(`  - Socket ID: ${socket.id}`);
+      console.log(`  - Form ID: ${formId}`);
+      console.log(`  - User ID: ${userId}`);
+      console.log(`  - User Name: ${userName}`);
 
       try {
         // Remove user from form room
         socket.leave(`form:${formId}`);
+        console.log(`  ✅ User left socket room: form:${formId}`);
 
         // Clean up active users
         const usersKey = `users:${formId}`;
         let activeUsers = (await getCache(usersKey)) || [];
+        console.log(`  📊 Active users before removal:`, activeUsers.map(u => `${u.userName}(${u.userId})`));
 
         const userIndex = activeUsers.findIndex(
           (u) => u.userId === userId || u.socketId === socket.id
         );
+        
         if (userIndex !== -1) {
           const user = activeUsers[userIndex];
           activeUsers.splice(userIndex, 1);
+          console.log(`  ✅ User removed from active list: ${user.userName}`);
+          console.log(`  📊 Active users after removal:`, activeUsers.map(u => `${u.userName}(${u.userId})`));
 
           if (activeUsers.length > 0) {
             await setCache(usersKey, activeUsers, 3600);
+            console.log(`  💾 Updated active users cache`);
           } else {
             await deleteCache(usersKey);
             await deleteCache(`formdata:${formId}`);
+            console.log(`  🗑️ Cleaned up empty form cache`);
           }
 
           console.log(`👋 ${user.userName} left form ${formId} (explicit)`);
 
-          // Broadcast user left
-          io.to(`form:${formId}`).emit("user_left", {
+          // Broadcast user left - IMMEDIATE BROADCAST
+          const leftEvent = {
             users: activeUsers,
             leftUser: { userId: user.userId, userName: user.userName },
-          });
+          };
+          console.log(`  📡 Broadcasting user_left event:`, leftEvent);
+          io.to(`form:${formId}`).emit("user_left", leftEvent);
 
           io.to(`form:${formId}`).emit("activity_log", {
             message: `left the form`,
@@ -287,6 +298,9 @@ module.exports = function (io) {
           // Clean up any field locks by this user
           // Note: In a full Redis setup, you'd scan for locks by userId
           // For now, we'll let locks expire naturally (30 second TTL)
+          console.log(`  🔓 Field locks will expire naturally (30s TTL)`);
+        } else {
+          console.log(`  ⚠️ User not found in active users list - may have already left`);
         }
       } catch (error) {
         console.error("❌ Error in leave_form:", error);
