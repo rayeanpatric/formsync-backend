@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,12 +13,14 @@
             padding: 20px;
             background: #f5f5f5;
         }
+
         .container {
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .test-item {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -25,9 +28,19 @@
             padding: 15px;
             margin: 10px 0;
         }
-        .success { border-left: 5px solid #28a745; }
-        .error { border-left: 5px solid #dc3545; }
-        .warning { border-left: 5px solid #ffc107; }
+
+        .success {
+            border-left: 5px solid #28a745;
+        }
+
+        .error {
+            border-left: 5px solid #dc3545;
+        }
+
+        .warning {
+            border-left: 5px solid #ffc107;
+        }
+
         button {
             background: #007bff;
             color: white;
@@ -37,7 +50,11 @@
             cursor: pointer;
             margin: 5px;
         }
-        button:hover { background: #0056b3; }
+
+        button:hover {
+            background: #0056b3;
+        }
+
         .log {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -51,11 +68,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>🚀 Production Deployment Test</h1>
         <p>Test the deployed application to verify all fixes are working.</p>
-        
+
         <div>
             <button onclick="testBackend()">🔧 Test Backend APIs</button>
             <button onclick="testSocketIO()">🔌 Test Socket.IO</button>
@@ -63,10 +81,10 @@
             <button onclick="testAll()">🎯 Test All</button>
             <button onclick="clearLog()">🗑️ Clear Log</button>
         </div>
-        
+
         <h3>Test Results:</h3>
         <div id="results"></div>
-        
+
         <h3>Test Log:</h3>
         <div id="log" class="log">Click a test button to begin...</div>
     </div>
@@ -96,7 +114,7 @@
 
         async function testBackend() {
             log('🔧 Testing Backend APIs...');
-            
+
             try {
                 // Test health endpoint
                 const healthResponse = await fetch(`${PRODUCTION_URLS.BACKEND}/api/health`);
@@ -135,7 +153,7 @@
 
         async function testSocketIO() {
             log('🔌 Testing Socket.IO client...');
-            
+
             try {
                 // Test if Socket.IO client script is served
                 const socketResponse = await fetch(`${PRODUCTION_URLS.BACKEND}/socket.io/socket.io.js`);
@@ -176,7 +194,7 @@
 
         async function testFrontend() {
             log('🌐 Testing Frontend deployment...');
-            
+
             try {
                 // Test if frontend is accessible
                 const frontendResponse = await fetch(`${PRODUCTION_URLS.FRONTEND}/`, { mode: 'no-cors' });
@@ -193,7 +211,7 @@
                         log(`⚠️ ${page} check failed (CORS limitation)`, 'warning');
                     }
                 }
-                
+
                 addResult('Frontend Pages', 'success', 'All main pages should be accessible');
 
             } catch (error) {
@@ -205,11 +223,11 @@
         async function testAll() {
             log('🎯 Running all tests...');
             resultsEl.innerHTML = '';
-            
+
             await testBackend();
             await testSocketIO();
             await testFrontend();
-            
+
             log('🎯 All tests completed!');
         }
 
@@ -227,4 +245,5 @@
         }, 1000);
     </script>
 </body>
+
 </html>
