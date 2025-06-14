@@ -21,7 +21,9 @@ window.formFiller = (() => {
       }
 
       // Fetch the form structure
-      const formResponse = await fetch(`${CONFIG.SERVER_URL}/api/forms/${formId}`);
+      const formResponse = await fetch(
+        `${CONFIG.SERVER_URL}/api/forms/${formId}`
+      );
       const formResult = await formResponse.json();
       if (!formResult.success) {
         window.showNotification(`Error: ${formResult.message}`, "error");
@@ -31,7 +33,9 @@ window.formFiller = (() => {
       currentForm = formResult.data;
 
       // Fetch existing response data if any
-      const responseResponse = await fetch(`${CONFIG.SERVER_URL}/api/responses/${formId}`);
+      const responseResponse = await fetch(
+        `${CONFIG.SERVER_URL}/api/responses/${formId}`
+      );
       const responseResult = await responseResponse.json();
 
       let responseData = {};
@@ -260,11 +264,14 @@ window.formFiller = (() => {
       });
 
       // Save the form response
-      const response = await fetch(`${CONFIG.SERVER_URL}/api/responses/${currentForm.id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(responseData),
-      });
+      const response = await fetch(
+        `${CONFIG.SERVER_URL}/api/responses/${currentForm.id}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(responseData),
+        }
+      );
 
       const result = await response.json();
       if (result.success) {

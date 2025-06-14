@@ -1,21 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Railway Connection Test</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
-        .success { background-color: #d4edda; color: #155724; }
-        .error { background-color: #f8d7da; color: #721c24; }
-        .info { background-color: #d1ecf1; color: #0c5460; }
-        button { padding: 10px 20px; margin: 5px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+        }
     </style>
 </head>
+
 <body>
     <h1>🚂 Railway Backend Connection Test</h1>
-    
+
     <div class="info test-result">
         <strong>Instructions:</strong>
         <ol>
@@ -29,7 +55,8 @@
 
     <div>
         <label for="railwayUrl">Railway URL:</label><br>
-        <input type="text" id="railwayUrl" placeholder="https://web-production-XXXX.up.railway.app" style="width: 400px; padding: 5px;">
+        <input type="text" id="railwayUrl" placeholder="https://web-production-XXXX.up.railway.app"
+            style="width: 400px; padding: 5px;">
         <br><br>
         <button onclick="testConnection()">Test Connection</button>
         <button onclick="testAPI()">Test API</button>
@@ -55,7 +82,7 @@
             }
 
             log('🔄 Testing basic connection...', 'info');
-            
+
             try {
                 const response = await fetch(url);
                 if (response.ok) {
@@ -76,7 +103,7 @@
             }
 
             log('🔄 Testing API endpoints...', 'info');
-            
+
             try {
                 // Test forms endpoint
                 const formsResponse = await fetch(`${url}/api/forms`);
@@ -114,7 +141,7 @@
             script.src = `${url}/socket.io/socket.io.js`;
             script.onload = () => {
                 const socket = io(url);
-                
+
                 socket.on('connect', () => {
                     log(`✅ Socket.IO connected! ID: ${socket.id}`, 'success');
                     socket.disconnect();
@@ -131,4 +158,5 @@
         }
     </script>
 </body>
+
 </html>

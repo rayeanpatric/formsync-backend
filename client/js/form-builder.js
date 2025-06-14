@@ -207,11 +207,14 @@ window.formBuilder = (() => {
 
       if (currentFormId) {
         // Update existing form
-        response = await fetch(`${CONFIG.SERVER_URL}/api/forms/${currentFormId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
+        response = await fetch(
+          `${CONFIG.SERVER_URL}/api/forms/${currentFormId}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          }
+        );
       } else {
         // Create new form
         response = await fetch(`${CONFIG.SERVER_URL}/api/forms`, {
