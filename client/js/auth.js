@@ -36,14 +36,14 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 function waitForConfig() {
   return new Promise((resolve) => {
-    if (typeof CONFIG !== 'undefined') {
+    if (typeof CONFIG !== "undefined") {
       resolve();
       return;
     }
-    
+
     // Wait for CONFIG to be loaded
     const checkConfig = () => {
-      if (typeof CONFIG !== 'undefined') {
+      if (typeof CONFIG !== "undefined") {
         resolve();
       } else {
         setTimeout(checkConfig, 100);
