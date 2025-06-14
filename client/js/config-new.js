@@ -10,13 +10,13 @@ const CONFIG = {
       console.log("Running in local development mode");
       return "http://localhost:3000"; // Development server
     }
-    
+
     // For production, use Railway URL
     console.log("Environment check:", {
       hostname: window.location.hostname,
       location: window.location.href,
     });
-    
+
     // Use the production Railway URL
     const railwayUrl = "https://proactively-backend-production.up.railway.app";
     console.log("Using Railway URL:", railwayUrl);
@@ -45,7 +45,9 @@ const CONFIG = {
   },
 
   // Debug info
-  DEBUG: window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1",
+  DEBUG:
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1",
 };
 
 // Debug logging

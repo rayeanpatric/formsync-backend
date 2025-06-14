@@ -20,12 +20,16 @@ const server = http.createServer(app);
 // OPTIMIZED SOCKET.IO CONFIGURATION FOR REAL-TIME PERFORMANCE
 const io = socketIo(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3001", // Client URL
+    origin: [
+      process.env.CLIENT_URL || "http://localhost:3001",
+      "http://127.0.0.1:3001",
+      "http://localhost:3001",
+    ], // Client URL
     methods: ["GET", "POST"],
     credentials: true,
   },
-  // FORCE WEBSOCKET-ONLY (no polling fallback for maximum performance)
-  transports: ["websocket"],
+  // ALLOW BOTH TRANSPORTS (polling for initial connection, websocket for optimal performance)
+  transports: ["polling", "websocket"],
   // OPTIMIZED TIMEOUTS FOR REAL-TIME RESPONSIVENESS
   pingTimeout: 30000, // Reduced from 60s for faster disconnect detection
   pingInterval: 10000, // Reduced from 25s for more frequent heartbeats
@@ -34,9 +38,8 @@ const io = socketIo(server, {
   // ALLOW LARGER PAYLOADS FOR FORM DATA
   maxHttpBufferSize: 1e6,
   // CONNECTION SETTINGS
-  allowEIO3: true,
-  // SECURITY SETTINGS
-  serveClient: false,
+  allowEIO3: true, // SECURITY SETTINGS
+  serveClient: true, // Enable serving socket.io.js client
   // PERFORMANCE SETTINGS
   connectTimeout: 45000,
 });
@@ -46,7 +49,11 @@ console.log(" Socket.IO server configured for maximum real-time performance");
 // Middlewares
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3001",
+    origin: [
+      process.env.CLIENT_URL || "http://localhost:3001",
+      "http://127.0.0.1:3001",
+      "http://localhost:3001",
+    ],
     credentials: true,
   })
 );

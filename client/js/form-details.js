@@ -1,5 +1,26 @@
 // Form details script
 
+// Wait for CONFIG to be available before defining API endpoints
+function initializeAPI() {
+  if (typeof CONFIG === "undefined") {
+    console.log("Waiting for CONFIG to load...");
+    setTimeout(initializeAPI, 100);
+    return;
+  }
+
+  // API endpoints - Use CONFIG.SERVER_URL for proper backend communication
+  window.API = {
+    USERS: `${CONFIG.SERVER_URL}/api/users`,
+    FORMS: `${CONFIG.SERVER_URL}/api/forms`,
+    RESPONSES: `${CONFIG.SERVER_URL}/api/responses`,
+  };
+
+  console.log("Form details API endpoints initialized:", window.API);
+}
+
+// Start API initialization
+initializeAPI();
+
 // Global state
 const detailsState = {
   currentUser: null,
@@ -32,15 +53,17 @@ const elements = {
   modalCloseBtn: document.querySelector("#deleteModal .close"),
 };
 
-// API endpoints
-const API = {
-  USERS: "/api/users",
-  FORMS: "/api/forms",
-  RESPONSES: "/api/responses",
-};
-
 // Initialize the application
 async function initApp() {
+  // Wait for API to be initialized
+  if (!window.API) {
+    console.log("Waiting for API to be initialized...");
+    setTimeout(initApp, 100);
+    return;
+  }
+
+  console.log("🚀 Form details app initializing...");
+
   // Check if user is authenticated
   const savedUser = localStorage.getItem("currentUser");
   if (!savedUser) {
@@ -166,7 +189,7 @@ function setupEventListeners() {
 // Load form data
 async function loadFormData() {
   try {
-    const response = await fetch(`${API.FORMS}/${detailsState.formId}`);
+    const response = await fetch(`${window.API.FORMS}/${detailsState.formId}`);
     const result = await response.json();
 
     if (result.success && result.data) {
@@ -202,7 +225,7 @@ async function loadFormData() {
 async function loadFormResponses() {
   try {
     const response = await fetch(
-      `${API.FORMS}/${detailsState.formId}/responses`
+      `${window.API.FORMS}/${detailsState.formId}/responses`
     );
     const result = await response.json();
 
@@ -381,7 +404,7 @@ async function deleteForm() {
   try {
     if (!detailsState.formId) return;
 
-    const response = await fetch(`${API.FORMS}/${detailsState.formId}`, {
+    const response = await fetch(`${window.API.FORMS}/${detailsState.formId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

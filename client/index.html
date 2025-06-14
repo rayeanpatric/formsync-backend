@@ -167,6 +167,11 @@
     </div> <!-- Load scripts in the correct order -->
     <script src="js/config.js"></script>
     <script>
+        // IMMEDIATE AUTH CHECK - Before anything else
+        console.log('🔍 IMMEDIATE AUTH CHECK');
+        console.log('localStorage currentUser:', localStorage.getItem('currentUser'));
+        console.log('Current URL:', window.location.href);
+
         // Wait for CONFIG to be available, then load Socket.IO
         function loadSocketIO() {
             if (typeof CONFIG === 'undefined') {

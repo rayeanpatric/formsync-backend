@@ -305,8 +305,12 @@ function renderFormsList(forms) {
 
 // Initialize the application
 async function initApp() {
+  console.log("🚀 Initializing app...");
+
   // Check if user is authenticated
   const savedUser = localStorage.getItem("currentUser");
+  console.log("Saved user from localStorage:", savedUser);
+
   if (!savedUser) {
     console.log("No user found in localStorage, redirecting to login");
     // Redirect to login page using replace() to avoid browser history issues
@@ -317,6 +321,7 @@ async function initApp() {
   try {
     // Set current user - catch any JSON parse errors
     appState.currentUser = JSON.parse(savedUser);
+    console.log("✅ Current user set:", appState.currentUser);
   } catch (error) {
     console.error("Error parsing user data:", error);
     // Clear invalid data and redirect to login
@@ -326,23 +331,37 @@ async function initApp() {
   }
 
   // Initialize Socket.IO connection
+  console.log("🔌 Initializing Socket.IO...");
   initializeSocket();
 
   // Update UI with user info
+  console.log("🎨 Updating user info...");
   updateUserInfo();
 
   // Set up event listeners
+  console.log("🎯 Setting up event listeners...");
   setupEventListeners();
 
   // Load initial data
+  console.log("📊 Loading initial data...");
   await loadInitialData();
 
   // Show home view
+  console.log("🏠 Showing home view...");
   showView("home-view");
+
+  console.log("✅ App initialization complete!");
 }
 
 // Update user info display
 function updateUserInfo() {
+  console.log("🎨 updateUserInfo called, currentUser:", appState.currentUser);
+  console.log("🎨 DOM elements:", {
+    userInfo: elements.userInfo,
+    loginButton: elements.loginButton,
+    logoutButton: elements.logoutButton,
+  });
+
   if (appState.currentUser) {
     // Add user icon based on role
     const icon =
@@ -350,15 +369,38 @@ function updateUserInfo() {
         ? '<i class="fas fa-user-shield"></i>'
         : '<i class="fas fa-user"></i>';
 
-    elements.userInfo.innerHTML = `${icon} ${appState.currentUser.name} <small>(${appState.currentUser.role})</small>`;
-    elements.loginButton.style.display = "none";
-    elements.logoutButton.style.display = "flex";
+    if (elements.userInfo) {
+      elements.userInfo.innerHTML = `${icon} ${appState.currentUser.name} <small>(${appState.currentUser.role})</small>`;
+      console.log("✅ User info updated:", elements.userInfo.innerHTML);
+    } else {
+      console.error("❌ userInfo element not found");
+    }
+
+    if (elements.loginButton) {
+      elements.loginButton.style.display = "none";
+      console.log("✅ Login button hidden");
+    } else {
+      console.error("❌ loginButton element not found");
+    }
+
+    if (elements.logoutButton) {
+      elements.logoutButton.style.display = "flex";
+      console.log("✅ Logout button shown");
+    } else {
+      console.error("❌ logoutButton element not found");
+    }
 
     // Show/hide create form button based on role
     if (elements.createFormButton) {
       elements.createFormButton.style.display =
         appState.currentUser.role === "admin" ? "inline-block" : "none";
+      console.log(
+        "✅ Create form button visibility set for role:",
+        appState.currentUser.role
+      );
     }
+  } else {
+    console.log("❌ No current user found");
   }
 }
 
@@ -564,8 +606,18 @@ function showNotification(message, type = "info", duration = 3000) {
   }, duration);
 }
 
-// When DOM is fully loaded, initialize the app
-document.addEventListener("DOMContentLoaded", initApp);
+// Initialize the app - handle both DOMContentLoaded and dynamic script loading
+function startApp() {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initApp);
+  } else {
+    // DOM is already ready, initialize immediately
+    initApp();
+  }
+}
+
+// Start the app
+startApp();
 
 // Make app functions available globally
 window.app = {
