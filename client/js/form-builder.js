@@ -18,19 +18,20 @@ window.formBuilder = (() => {
   let fieldCounter = 0;
 
   // Current form being edited (null for new forms)
-  let currentFormId = null;  /**
+  let currentFormId = null;
+  /**
    * Initialize the form builder
    */
   function init() {
     console.log("🚀 Form Builder initializing...");
-    
+
     // Wait for DOM to be fully loaded if elements aren't available yet
-    if (document.readyState !== 'complete') {
+    if (document.readyState !== "complete") {
       console.log("⏳ DOM not ready, waiting...");
-      window.addEventListener('load', init);
+      window.addEventListener("load", init);
       return;
     }
-    
+
     // Re-query elements in case they weren't available during module load
     const addTextFieldBtn = document.getElementById("add-text-field");
     const addNumberFieldBtn = document.getElementById("add-number-field");
@@ -39,7 +40,7 @@ window.formBuilder = (() => {
     const fieldTemplate = document.getElementById("field-template");
     const optionTemplate = document.getElementById("option-template");
     const formBuilderForm = document.getElementById("form-builder-form");
-    
+
     // Check if elements exist
     console.log("Checking form builder elements:");
     console.log("  - Add Text Field Button:", !!addTextFieldBtn);
@@ -49,19 +50,23 @@ window.formBuilder = (() => {
     console.log("  - Field Template:", !!fieldTemplate);
     console.log("  - Option Template:", !!optionTemplate);
     console.log("  - Form Builder Form:", !!formBuilderForm);
-    
+
     if (!addTextFieldBtn || !addNumberFieldBtn || !addDropdownFieldBtn) {
-      console.error("❌ Form builder buttons not found! Check if elements exist in DOM");
-      console.log("Available elements with add- prefix:", 
-        Array.from(document.querySelectorAll('[id*="add-"]')).map(el => el.id));
+      console.error(
+        "❌ Form builder buttons not found! Check if elements exist in DOM"
+      );
+      console.log(
+        "Available elements with add- prefix:",
+        Array.from(document.querySelectorAll('[id*="add-"]')).map((el) => el.id)
+      );
       return;
     }
-    
+
     if (!formFieldsContainer) {
       console.error("❌ Form fields container not found!");
       return;
     }
-    
+
     if (!fieldTemplate || !optionTemplate) {
       console.error("❌ Templates not found!");
       return;
@@ -92,30 +97,31 @@ window.formBuilder = (() => {
     } else {
       console.warn("⚠️ Form builder form not found");
     }
-    
+
     console.log("✅ Form Builder initialized successfully");
-  }  /**
+  }
+  /**
    * Add a new field to the form builder
    * @param {string} type - Field type (text, number, dropdown)
    */
   function addField(type) {
     console.log(`🔧 Adding field of type: ${type}`);
-    
+
     try {
       // Query elements fresh each time to avoid stale references
       const fieldTemplate = document.getElementById("field-template");
       const optionTemplate = document.getElementById("option-template");
       const formFieldsContainer = document.getElementById("form-fields");
-      
+
       // Clone field template
       if (!fieldTemplate) {
         console.error("❌ Field template not found!");
         return;
       }
-      
+
       const fieldElement = fieldTemplate.content.cloneNode(true);
       const fieldItem = fieldElement.querySelector(".field-item");
-      
+
       if (!fieldItem) {
         console.error("❌ Field item not found in template!");
         return;
@@ -522,23 +528,26 @@ window.formBuilder = (() => {
 })();
 
 // Add this after the form builder module to test button clicks
-window.testFormBuilderButtons = function() {
+window.testFormBuilderButtons = function () {
   console.log("🧪 Testing form builder buttons...");
-  
+
   // Check if we're in the form builder view
   const formBuilderView = document.getElementById("form-builder-view");
   console.log("Form builder view:", !!formBuilderView);
-  console.log("Form builder view visible:", formBuilderView?.style.display !== "none");
-  
+  console.log(
+    "Form builder view visible:",
+    formBuilderView?.style.display !== "none"
+  );
+
   // Test button clicks directly
   const addTextBtn = document.getElementById("add-text-field");
   const addNumberBtn = document.getElementById("add-number-field");
   const addDropdownBtn = document.getElementById("add-dropdown-field");
-  
+
   console.log("Add Text Button:", !!addTextBtn);
   console.log("Add Number Button:", !!addNumberBtn);
   console.log("Add Dropdown Button:", !!addDropdownBtn);
-  
+
   if (addTextBtn) {
     addTextBtn.click();
     console.log("✅ Clicked add text button");
