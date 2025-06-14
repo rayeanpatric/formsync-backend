@@ -18,63 +18,165 @@ window.formBuilder = (() => {
   let fieldCounter = 0;
 
   // Current form being edited (null for new forms)
-  let currentFormId = null;
-
-  /**
+  let currentFormId = null;  /**
    * Initialize the form builder
    */
   function init() {
+    console.log("🚀 Form Builder initializing...");
+    
+    // Wait for DOM to be fully loaded if elements aren't available yet
+    if (document.readyState !== 'complete') {
+      console.log("⏳ DOM not ready, waiting...");
+      window.addEventListener('load', init);
+      return;
+    }
+    
+    // Re-query elements in case they weren't available during module load
+    const addTextFieldBtn = document.getElementById("add-text-field");
+    const addNumberFieldBtn = document.getElementById("add-number-field");
+    const addDropdownFieldBtn = document.getElementById("add-dropdown-field");
+    const formFieldsContainer = document.getElementById("form-fields");
+    const fieldTemplate = document.getElementById("field-template");
+    const optionTemplate = document.getElementById("option-template");
+    const formBuilderForm = document.getElementById("form-builder-form");
+    
+    // Check if elements exist
+    console.log("Checking form builder elements:");
+    console.log("  - Add Text Field Button:", !!addTextFieldBtn);
+    console.log("  - Add Number Field Button:", !!addNumberFieldBtn);
+    console.log("  - Add Dropdown Field Button:", !!addDropdownFieldBtn);
+    console.log("  - Form Fields Container:", !!formFieldsContainer);
+    console.log("  - Field Template:", !!fieldTemplate);
+    console.log("  - Option Template:", !!optionTemplate);
+    console.log("  - Form Builder Form:", !!formBuilderForm);
+    
+    if (!addTextFieldBtn || !addNumberFieldBtn || !addDropdownFieldBtn) {
+      console.error("❌ Form builder buttons not found! Check if elements exist in DOM");
+      console.log("Available elements with add- prefix:", 
+        Array.from(document.querySelectorAll('[id*="add-"]')).map(el => el.id));
+      return;
+    }
+    
+    if (!formFieldsContainer) {
+      console.error("❌ Form fields container not found!");
+      return;
+    }
+    
+    if (!fieldTemplate || !optionTemplate) {
+      console.error("❌ Templates not found!");
+      return;
+    }
+
     // Add event listeners for field buttons
-    addTextFieldBtn.addEventListener("click", () => addField("text"));
-    addNumberFieldBtn.addEventListener("click", () => addField("number"));
-    addDropdownFieldBtn.addEventListener("click", () => addField("dropdown"));
+    console.log("Adding event listeners...");
+    addTextFieldBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      console.log("📝 Add Text Field clicked");
+      addField("text");
+    });
+    addNumberFieldBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      console.log("🔢 Add Number Field clicked");
+      addField("number");
+    });
+    addDropdownFieldBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      console.log("📋 Add Dropdown Field clicked");
+      addField("dropdown");
+    });
 
     // Form submission
-    formBuilderForm.addEventListener("submit", handleFormSubmit);
-  }
-
-  /**
+    if (formBuilderForm) {
+      formBuilderForm.addEventListener("submit", handleFormSubmit);
+      console.log("✅ Form submission handler added");
+    } else {
+      console.warn("⚠️ Form builder form not found");
+    }
+    
+    console.log("✅ Form Builder initialized successfully");
+  }  /**
    * Add a new field to the form builder
    * @param {string} type - Field type (text, number, dropdown)
    */
   function addField(type) {
-    // Clone field template
-    const fieldElement = fieldTemplate.content.cloneNode(true);
-    const fieldItem = fieldElement.querySelector(".field-item");
+    console.log(`🔧 Adding field of type: ${type}`);
+    
+    try {
+      // Query elements fresh each time to avoid stale references
+      const fieldTemplate = document.getElementById("field-template");
+      const optionTemplate = document.getElementById("option-template");
+      const formFieldsContainer = document.getElementById("form-fields");
+      
+      // Clone field template
+      if (!fieldTemplate) {
+        console.error("❌ Field template not found!");
+        return;
+      }
+      
+      const fieldElement = fieldTemplate.content.cloneNode(true);
+      const fieldItem = fieldElement.querySelector(".field-item");
+      
+      if (!fieldItem) {
+        console.error("❌ Field item not found in template!");
+        return;
+      }
 
-    // Set field attributes
-    fieldItem.dataset.type = type;
-    fieldItem.dataset.index = fieldCounter++;
+      // Set field attributes
+      fieldItem.dataset.type = type;
+      fieldItem.dataset.index = fieldCounter++;
 
-    // Set field type display
-    fieldItem.querySelector(".field-type").textContent =
-      capitalizeFirstLetter(type);
+      // Set field type display
+      const fieldTypeElement = fieldItem.querySelector(".field-type");
+      if (fieldTypeElement) {
+        fieldTypeElement.textContent = capitalizeFirstLetter(type);
+      } else {
+        console.warn("⚠️ Field type element not found in template");
+      }
 
-    // Add remove field event listener
-    fieldItem
-      .querySelector(".remove-field")
-      .addEventListener("click", function () {
-        fieldItem.remove();
-      });
-
-    // Show options container for dropdown fields
-    if (type === "dropdown") {
-      const optionsContainer = fieldItem.querySelector(".options-container");
-      optionsContainer.style.display = "block";
-
-      // Add option button
-      fieldItem
-        .querySelector(".add-option")
-        .addEventListener("click", function () {
-          addOption(fieldItem.querySelector(".options-list"));
+      // Add remove field event listener
+      const removeButton = fieldItem.querySelector(".remove-field");
+      if (removeButton) {
+        removeButton.addEventListener("click", function () {
+          console.log("🗑️ Removing field");
+          fieldItem.remove();
         });
+      } else {
+        console.warn("⚠️ Remove field button not found in template");
+      }
 
-      // Add initial option
-      addOption(fieldItem.querySelector(".options-list"));
+      // Show options container for dropdown fields
+      if (type === "dropdown") {
+        console.log("📋 Setting up dropdown field...");
+        const optionsContainer = fieldItem.querySelector(".options-container");
+        if (optionsContainer) {
+          optionsContainer.style.display = "block";
+
+          // Add option button
+          const addOptionButton = fieldItem.querySelector(".add-option");
+          if (addOptionButton) {
+            addOptionButton.addEventListener("click", function () {
+              console.log("➕ Adding dropdown option");
+              addOption(fieldItem.querySelector(".options-list"));
+            });
+          }
+
+          // Add initial option
+          addOption(fieldItem.querySelector(".options-list"));
+        } else {
+          console.warn("⚠️ Options container not found for dropdown");
+        }
+      }
+
+      // Add field to container
+      if (formFieldsContainer) {
+        formFieldsContainer.appendChild(fieldItem);
+        console.log(`✅ Field of type ${type} added successfully`);
+      } else {
+        console.error("❌ Form fields container not found!");
+      }
+    } catch (error) {
+      console.error("❌ Error adding field:", error);
     }
-
-    // Add field to container
-    formFieldsContainer.appendChild(fieldItem);
   }
 
   /**
@@ -418,3 +520,27 @@ window.formBuilder = (() => {
     init,
   };
 })();
+
+// Add this after the form builder module to test button clicks
+window.testFormBuilderButtons = function() {
+  console.log("🧪 Testing form builder buttons...");
+  
+  // Check if we're in the form builder view
+  const formBuilderView = document.getElementById("form-builder-view");
+  console.log("Form builder view:", !!formBuilderView);
+  console.log("Form builder view visible:", formBuilderView?.style.display !== "none");
+  
+  // Test button clicks directly
+  const addTextBtn = document.getElementById("add-text-field");
+  const addNumberBtn = document.getElementById("add-number-field");
+  const addDropdownBtn = document.getElementById("add-dropdown-field");
+  
+  console.log("Add Text Button:", !!addTextBtn);
+  console.log("Add Number Button:", !!addNumberBtn);
+  console.log("Add Dropdown Button:", !!addDropdownBtn);
+  
+  if (addTextBtn) {
+    addTextBtn.click();
+    console.log("✅ Clicked add text button");
+  }
+};

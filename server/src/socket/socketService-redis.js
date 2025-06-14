@@ -241,9 +241,11 @@ module.exports = function (io) {
           console.error("❌ Error loading form state:", error);
         }
       }, 100);
-    });    // 🚪 USER LEAVES FORM - EXPLICIT CLEANUP
+    }); // 🚪 USER LEAVES FORM - EXPLICIT CLEANUP
     socket.on("leave_form", async ({ formId, userId, userName }) => {
-      console.log(`� LEAVE_FORM EVENT - ${userName} (${userId}) explicitly leaving form ${formId}`);
+      console.log(
+        `� LEAVE_FORM EVENT - ${userName} (${userId}) explicitly leaving form ${formId}`
+      );
       console.log(`  - Socket ID: ${socket.id}`);
       console.log(`  - Form ID: ${formId}`);
       console.log(`  - User ID: ${userId}`);
@@ -257,17 +259,23 @@ module.exports = function (io) {
         // Clean up active users
         const usersKey = `users:${formId}`;
         let activeUsers = (await getCache(usersKey)) || [];
-        console.log(`  📊 Active users before removal:`, activeUsers.map(u => `${u.userName}(${u.userId})`));
+        console.log(
+          `  📊 Active users before removal:`,
+          activeUsers.map((u) => `${u.userName}(${u.userId})`)
+        );
 
         const userIndex = activeUsers.findIndex(
           (u) => u.userId === userId || u.socketId === socket.id
         );
-        
+
         if (userIndex !== -1) {
           const user = activeUsers[userIndex];
           activeUsers.splice(userIndex, 1);
           console.log(`  ✅ User removed from active list: ${user.userName}`);
-          console.log(`  📊 Active users after removal:`, activeUsers.map(u => `${u.userName}(${u.userId})`));
+          console.log(
+            `  📊 Active users after removal:`,
+            activeUsers.map((u) => `${u.userName}(${u.userId})`)
+          );
 
           if (activeUsers.length > 0) {
             await setCache(usersKey, activeUsers, 3600);
@@ -300,7 +308,9 @@ module.exports = function (io) {
           // For now, we'll let locks expire naturally (30 second TTL)
           console.log(`  🔓 Field locks will expire naturally (30s TTL)`);
         } else {
-          console.log(`  ⚠️ User not found in active users list - may have already left`);
+          console.log(
+            `  ⚠️ User not found in active users list - may have already left`
+          );
         }
       } catch (error) {
         console.error("❌ Error in leave_form:", error);
