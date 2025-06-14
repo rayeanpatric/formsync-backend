@@ -164,46 +164,61 @@
                 <button id="confirmDelete" class="btn danger">Delete</button>
             </div>
         </div>
-    </div> <!-- Load scripts in the correct order -->
+    </div>    <!-- Load scripts in the correct order -->
     <script src="js/config.js"></script>
     <script>
-        // Dynamically load Socket.IO from server
-        const socketScript = document.createElement('script');
-        socketScript.src = window.CONFIG.SERVER_URL + '/socket.io/socket.io.js';
-        socketScript.onload = function () {
-            // Load other scripts after Socket.IO is loaded
-            const scripts = [
-                'js/auth.js',
-                'js/app.js',
-                'js/form-builder.js',
-                'js/form-filler-enhanced.js',
-                'js/script-init.js'
-            ];
+        // Wait for CONFIG to be available, then load Socket.IO
+        function loadSocketIO() {
+            if (typeof CONFIG === 'undefined') {
+                console.log('Waiting for CONFIG to load...');
+                setTimeout(loadSocketIO, 100);
+                return;
+            }
+            
+            console.log('CONFIG loaded, SERVER_URL:', CONFIG.SERVER_URL);
+            
+            // Dynamically load Socket.IO from server
+            const socketScript = document.createElement('script');
+            socketScript.src = CONFIG.SERVER_URL + '/socket.io/socket.io.js';
+            socketScript.onload = function () {
+                console.log('Socket.IO loaded successfully');
+                // Load other scripts after Socket.IO is loaded
+                const scripts = [
+                    'js/auth.js',
+                    'js/app.js',
+                    'js/form-builder.js',
+                    'js/form-filler-enhanced.js',
+                    'js/script-init.js'
+                ];
 
-            let loadedCount = 0;
-            scripts.forEach((src, index) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = () => {
-                    loadedCount++;
-                    if (loadedCount === scripts.length) {
-                        console.log('All scripts loaded successfully');
-                    }
-                };
-                document.head.appendChild(script);
-            });
-        };
-        socketScript.onerror = function () {
-            console.error('Failed to load Socket.IO from server');
-            // Load scripts anyway for basic functionality
-            const scripts = ['js/auth.js', 'js/app.js', 'js/form-builder.js', 'js/form-filler-enhanced.js', 'js/script-init.js'];
-            scripts.forEach(src => {
-                const script = document.createElement('script');
-                script.src = src;
-                document.head.appendChild(script);
-            });
-        };
-        document.head.appendChild(socketScript);
+                let loadedCount = 0;
+                scripts.forEach((src, index) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = () => {
+                        loadedCount++;
+                        if (loadedCount === scripts.length) {
+                            console.log('All scripts loaded successfully');
+                        }
+                    };
+                    document.head.appendChild(script);
+                });
+            };
+            socketScript.onerror = function () {
+                console.error('Failed to load Socket.IO from server:', CONFIG.SERVER_URL);
+                // Load scripts anyway for basic functionality
+                const scripts = ['js/auth.js', 'js/app.js', 'js/form-builder.js', 'js/form-filler-enhanced.js', 'js/script-init.js'];
+                scripts.forEach(src => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    document.head.appendChild(script);
+                });
+            };
+            document.head.appendChild(socketScript);
+        }
+        
+        // Start loading Socket.IO
+        loadSocketIO();
     </script>
 </body>
 

@@ -16,8 +16,8 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
-# Expose app port
-EXPOSE 3000
+# Expose app port (Railway uses PORT environment variable)
+EXPOSE 8080
 
 # Command to start the app
 CMD ["npm", "start"]

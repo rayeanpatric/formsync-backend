@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "name": "collaborative-forms-frontend",
+  "builds": [
+    {
+      "src": "client/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/client/$1"
+    }
+  ],
+  "env": {
+    "VITE_RAILWAY_URL": "https://proactively-backend-production.up.railway.app"
+  }
+}
