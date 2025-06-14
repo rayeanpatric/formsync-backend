@@ -49,11 +49,25 @@ console.log(" Socket.IO server configured for maximum real-time performance");
 // Middlewares
 app.use(
   cors({
-    origin: [
-      process.env.CLIENT_URL || "http://localhost:3001",
-      "http://127.0.0.1:3001",
-      "http://localhost:3001",
-    ],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+
+      const allowedOrigins = [
+        process.env.CLIENT_URL || "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "http://localhost:3001",
+        "https://proactively-backend-one.vercel.app",
+        "https://collaborative-form-filler-frontend.vercel.app",
+      ];
+
+      // Allow any Vercel app domain
+      if (origin.includes(".vercel.app") || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
