@@ -10,14 +10,18 @@ module.exports = function (io) {
   // Initialize Redis (optional - falls back to in-memory if not available)
   let redis = null;
   let redisReady = false;
-
   try {
     // Try to connect to Redis (use REDIS_URL env var or default to localhost)
     redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379", {
       retryDelayOnFailover: 100,
-      maxRetriesPerRequest: 3,
-      connectTimeout: 5000,
+      maxRetriesPerRequest: 1, // Reduced for Upstash
+      connectTimeout: 10000, // Increased for Upstash
       lazyConnect: true,
+      keepAlive: 30000,
+      family: 0, // Auto-detect IPv4/IPv6
+      tls: process.env.REDIS_URL?.includes('upstash.io') ? { 
+        rejectUnauthorized: false 
+      } : undefined,
     });
 
     redis.on("connect", () => {
