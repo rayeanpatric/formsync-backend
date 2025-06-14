@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backend Connection Test</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
-        .success { background-color: #d4edda; }
-        .error { background-color: #f8d7da; }
-        .testing { background-color: #fff3cd; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .test {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .success {
+            background-color: #d4edda;
+        }
+
+        .error {
+            background-color: #f8d7da;
+        }
+
+        .testing {
+            background-color: #fff3cd;
+        }
     </style>
 </head>
+
 <body>
     <h1>Backend Connection Test</h1>
     <div id="results"></div>
@@ -40,7 +59,7 @@
                         'Content-Type': 'application/json'
                     }
                 });
-                
+
                 if (response.ok) {
                     addResult('API Test', 'success', `✅ API accessible (Status: ${response.status})`);
                 } else {
@@ -54,7 +73,7 @@
             try {
                 addResult('Socket.IO Test', 'testing', 'Testing Socket.IO endpoint...');
                 const socketResponse = await fetch(`${CONFIG.SERVER_URL}/socket.io/?EIO=4&transport=polling&t=${Date.now()}`);
-                
+
                 if (socketResponse.ok) {
                     addResult('Socket.IO Test', 'success', `✅ Socket.IO endpoint accessible`);
                 } else {
@@ -72,4 +91,5 @@
         testBackend();
     </script>
 </body>
+
 </html>

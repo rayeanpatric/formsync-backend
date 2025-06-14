@@ -8,20 +8,23 @@ const CONFIG = {
       window.location.hostname === "127.0.0.1"
     ) {
       return "http://localhost:3000"; // Development server
-    }    // For production, try to get from environment variable or use fallback
+    } // For production, try to get from environment variable or use fallback
     // Debug: Log environment variables
-    console.log('🔍 Environment check:', {
+    console.log("🔍 Environment check:", {
       hostname: window.location.hostname,
       VITE_RAILWAY_URL: import.meta?.env?.VITE_RAILWAY_URL,
-      process_env: typeof process !== 'undefined' ? process.env?.VITE_RAILWAY_URL : 'not available',
-      location: window.location.href
+      process_env:
+        typeof process !== "undefined"
+          ? process.env?.VITE_RAILWAY_URL
+          : "not available",
+      location: window.location.href,
     });
-      // Try multiple ways to get the environment variable
-    const railwayUrl = 
-      import.meta?.env?.VITE_RAILWAY_URL || 
-      (typeof process !== 'undefined' ? process.env?.VITE_RAILWAY_URL : null) ||
+    // Try multiple ways to get the environment variable
+    const railwayUrl =
+      import.meta?.env?.VITE_RAILWAY_URL ||
+      (typeof process !== "undefined" ? process.env?.VITE_RAILWAY_URL : null) ||
       "https://proactively-backend-production.up.railway.app"; // Your actual Railway URL
-    console.log('🚂 Using Railway URL:', railwayUrl);
+    console.log("🚂 Using Railway URL:", railwayUrl);
     return railwayUrl;
   })(),
 

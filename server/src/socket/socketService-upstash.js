@@ -25,11 +25,14 @@ module.exports = function (io) {
     };
 
     // Add TLS for Upstash
-    if (process.env.REDIS_URL?.includes('upstash.io')) {
+    if (process.env.REDIS_URL?.includes("upstash.io")) {
       redisConfig.tls = { rejectUnauthorized: false };
     }
 
-    redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379", redisConfig);
+    redis = new Redis(
+      process.env.REDIS_URL || "redis://localhost:6379",
+      redisConfig
+    );
 
     redis.on("connect", () => {
       console.log("🔴 Redis connected successfully (Upstash optimized)");
@@ -48,7 +51,10 @@ module.exports = function (io) {
 
     // Try to connect with error handling
     redis.connect().catch((err) => {
-      console.log("⚠️ Redis not available, using in-memory storage:", err.message);
+      console.log(
+        "⚠️ Redis not available, using in-memory storage:",
+        err.message
+      );
       redis = null;
     });
   } catch (error) {
@@ -118,10 +124,12 @@ module.exports = function (io) {
         console.log("Redis publish fallback:", error.message);
       }
       return false;
-    }
+    },
   };
 
-  console.log("🚀 Enhanced Socket.IO service initialized with Redis + in-memory hybrid storage");
+  console.log(
+    "🚀 Enhanced Socket.IO service initialized with Redis + in-memory hybrid storage"
+  );
 
   // Rest of the Socket.IO logic (keeping it the same as the original)
   io.on("connection", async (socket) => {
@@ -140,8 +148,14 @@ module.exports = function (io) {
 
         // Store user info in hybrid storage
         const userKey = `user:${socket.id}`;
-        const userInfo = { formId, userId, username, socketId: socket.id, joinedAt: new Date() };
-        
+        const userInfo = {
+          formId,
+          userId,
+          username,
+          socketId: socket.id,
+          joinedAt: new Date(),
+        };
+
         // Try Redis first, fallback to in-memory
         const redisSet = await redisOps.set(userKey, userInfo, 3600);
         if (!redisSet) {
@@ -153,14 +167,14 @@ module.exports = function (io) {
           where: { id: formId },
           include: {
             fields: {
-              orderBy: { order: 'asc' }
+              orderBy: { order: "asc" },
             },
             responses: {
               include: {
-                fieldResponses: true
-              }
-            }
-          }
+                fieldResponses: true,
+              },
+            },
+          },
         });
 
         if (form) {
@@ -168,7 +182,10 @@ module.exports = function (io) {
           const formKey = `form:${formId}`;
           const redisCache = await redisOps.set(formKey, form, 1800);
           if (!redisCache) {
-            inMemoryStore.formDataCache[formId] = { data: form, cachedAt: Date.now() };
+            inMemoryStore.formDataCache[formId] = {
+              data: form,
+              cachedAt: Date.now(),
+            };
           }
 
           // Send current form data to the joining user
@@ -176,14 +193,18 @@ module.exports = function (io) {
 
           // Get active users for this form
           const activeUsersKey = `active:${formId}`;
-          let activeUsers = await redisOps.get(activeUsersKey) || [];
-          
+          let activeUsers = (await redisOps.get(activeUsersKey)) || [];
+
           if (!activeUsers.length && inMemoryStore.activeUsers) {
-            activeUsers = Object.values(inMemoryStore.activeUsers).filter(u => u.formId === formId);
+            activeUsers = Object.values(inMemoryStore.activeUsers).filter(
+              (u) => u.formId === formId
+            );
           }
 
           // Add current user to active users
-          const existingIndex = activeUsers.findIndex(u => u.userId === userId);
+          const existingIndex = activeUsers.findIndex(
+            (u) => u.userId === userId
+          );
           if (existingIndex >= 0) {
             activeUsers[existingIndex] = userInfo;
           } else {
@@ -191,10 +212,14 @@ module.exports = function (io) {
           }
 
           // Update active users
-          const activeSet = await redisOps.set(activeUsersKey, activeUsers, 3600);
+          const activeSet = await redisOps.set(
+            activeUsersKey,
+            activeUsers,
+            3600
+          );
           if (!activeSet) {
             // Update in-memory store
-            Object.keys(inMemoryStore.activeUsers).forEach(socketId => {
+            Object.keys(inMemoryStore.activeUsers).forEach((socketId) => {
               const user = inMemoryStore.activeUsers[socketId];
               if (user.formId === formId) {
                 activeUsers.push(user);
@@ -220,8 +245,13 @@ module.exports = function (io) {
       try {
         // Store field lock in hybrid storage
         const lockKey = `lock:${formId}:${fieldId}`;
-        const lockInfo = { userId, username, socketId: socket.id, lockedAt: new Date() };
-        
+        const lockInfo = {
+          userId,
+          username,
+          socketId: socket.id,
+          lockedAt: new Date(),
+        };
+
         const redisLock = await redisOps.set(lockKey, lockInfo, 30);
         if (!redisLock) {
           if (!inMemoryStore.fieldLocks[formId]) {
@@ -235,7 +265,7 @@ module.exports = function (io) {
           fieldId,
           userId,
           username,
-          socketId: socket.id
+          socketId: socket.id,
         });
 
         console.log(`🔒 Field ${fieldId} locked by ${username}`);
@@ -252,7 +282,7 @@ module.exports = function (io) {
         // Remove field lock
         const lockKey = `lock:${formId}:${fieldId}`;
         const deleted = await redisOps.del(lockKey);
-        
+
         if (!deleted && inMemoryStore.fieldLocks[formId]) {
           delete inMemoryStore.fieldLocks[formId][fieldId];
         }
@@ -274,7 +304,7 @@ module.exports = function (io) {
         // Cache the field update
         const updateKey = `update:${formId}:${fieldId}`;
         const updateInfo = { value, userId, username, updatedAt: new Date() };
-        
+
         await redisOps.set(updateKey, updateInfo, 60);
 
         // Broadcast real-time update to other users
@@ -283,18 +313,17 @@ module.exports = function (io) {
           value,
           userId,
           username,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
 
         // Publish to Redis for multi-server support
         await redisOps.publish(`form-updates:${formId}`, {
-          type: 'field-update',
+          type: "field-update",
           fieldId,
           value,
           userId,
-          username
+          username,
         });
-
       } catch (error) {
         console.error("Error in field-update:", error);
       }
@@ -311,16 +340,16 @@ module.exports = function (io) {
             formId,
             userId,
             fieldResponses: {
-              create: responses.map(resp => ({
+              create: responses.map((resp) => ({
                 fieldId: resp.fieldId,
-                value: resp.value
-              }))
-            }
+                value: resp.value,
+              })),
+            },
           },
           include: {
             fieldResponses: true,
-            user: true
-          }
+            user: true,
+          },
         });
 
         // Cache the new response
@@ -330,14 +359,14 @@ module.exports = function (io) {
         // Broadcast new submission to all users in the form
         io.to(`form-${formId}`).emit("new-submission", {
           response,
-          submittedBy: response.user?.username || 'Anonymous',
-          submittedAt: response.createdAt
+          submittedBy: response.user?.username || "Anonymous",
+          submittedAt: response.createdAt,
         });
 
         // Publish to Redis for multi-server support
         await redisOps.publish(`form-submissions:${formId}`, {
-          type: 'new-submission',
-          response
+          type: "new-submission",
+          response,
         });
 
         socket.emit("submission-success", { responseId: response.id });
@@ -345,7 +374,9 @@ module.exports = function (io) {
         console.log(`📝 Form ${formId} submitted by user ${userId}`);
       } catch (error) {
         console.error("Error in submit-response:", error);
-        socket.emit("submission-error", { message: "Failed to submit response" });
+        socket.emit("submission-error", {
+          message: "Failed to submit response",
+        });
       }
     });
 
@@ -362,17 +393,19 @@ module.exports = function (io) {
 
           // Update active users list
           const activeUsersKey = `active:${formId}`;
-          let activeUsers = await redisOps.get(activeUsersKey) || [];
-          activeUsers = activeUsers.filter(u => u.socketId !== socket.id);
+          let activeUsers = (await redisOps.get(activeUsersKey)) || [];
+          activeUsers = activeUsers.filter((u) => u.socketId !== socket.id);
           await redisOps.set(activeUsersKey, activeUsers, 3600);
 
           // Remove any field locks held by this user
           if (inMemoryStore.fieldLocks[formId]) {
-            Object.keys(inMemoryStore.fieldLocks[formId]).forEach(fieldId => {
+            Object.keys(inMemoryStore.fieldLocks[formId]).forEach((fieldId) => {
               const lock = inMemoryStore.fieldLocks[formId][fieldId];
               if (lock.socketId === socket.id) {
                 delete inMemoryStore.fieldLocks[formId][fieldId];
-                socket.to(`form-${formId}`).emit("field-unlocked", { fieldId, userId });
+                socket
+                  .to(`form-${formId}`)
+                  .emit("field-unlocked", { fieldId, userId });
               }
             });
           }
@@ -380,7 +413,9 @@ module.exports = function (io) {
           // Broadcast updated user list
           io.to(`form-${formId}`).emit("active-users", activeUsers);
 
-          console.log(`👋 User ${username || socket.id} disconnected from form ${formId}`);
+          console.log(
+            `👋 User ${username || socket.id} disconnected from form ${formId}`
+          );
         } catch (error) {
           console.error("Error in disconnect:", error);
         }

@@ -19,9 +19,11 @@ module.exports = function (io) {
       lazyConnect: true,
       keepAlive: 30000,
       family: 0, // Auto-detect IPv4/IPv6
-      tls: process.env.REDIS_URL?.includes('upstash.io') ? { 
-        rejectUnauthorized: false 
-      } : undefined,
+      tls: process.env.REDIS_URL?.includes("upstash.io")
+        ? {
+            rejectUnauthorized: false,
+          }
+        : undefined,
     });
 
     redis.on("connect", () => {

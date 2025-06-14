@@ -164,7 +164,7 @@
                 <button id="confirmDelete" class="btn danger">Delete</button>
             </div>
         </div>
-    </div>    <!-- Load scripts in the correct order -->
+    </div> <!-- Load scripts in the correct order -->
     <script src="js/config.js"></script>
     <script>
         // Wait for CONFIG to be available, then load Socket.IO
@@ -174,9 +174,9 @@
                 setTimeout(loadSocketIO, 100);
                 return;
             }
-            
+
             console.log('CONFIG loaded, SERVER_URL:', CONFIG.SERVER_URL);
-            
+
             // Dynamically load Socket.IO from server
             const socketScript = document.createElement('script');
             socketScript.src = CONFIG.SERVER_URL + '/socket.io/socket.io.js';
@@ -216,7 +216,7 @@
             };
             document.head.appendChild(socketScript);
         }
-        
+
         // Start loading Socket.IO
         loadSocketIO();
     </script>

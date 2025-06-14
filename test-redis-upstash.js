@@ -9,10 +9,19 @@ dotenv.config({ path: path.join(__dirname, "server", ".env") });
 
 async function testUpstashRedis() {
   console.log("🔴 Testing Upstash Redis connection (REST API)...");
-  console.log("Upstash URL:", process.env.UPSTASH_REDIS_REST_URL ? "Set" : "Not set");
-  console.log("Upstash Token:", process.env.UPSTASH_REDIS_REST_TOKEN ? "Set" : "Not set");
+  console.log(
+    "Upstash URL:",
+    process.env.UPSTASH_REDIS_REST_URL ? "Set" : "Not set"
+  );
+  console.log(
+    "Upstash Token:",
+    process.env.UPSTASH_REDIS_REST_TOKEN ? "Set" : "Not set"
+  );
 
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+  if (
+    !process.env.UPSTASH_REDIS_REST_URL ||
+    !process.env.UPSTASH_REDIS_REST_TOKEN
+  ) {
     console.log("❌ Upstash credentials missing");
     return;
   }

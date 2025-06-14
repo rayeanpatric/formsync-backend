@@ -7,10 +7,19 @@ dotenv.config({ path: path.join(__dirname, "server", ".env") });
 
 console.log("🔍 Environment Check:");
 console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
-console.log("DATABASE_URL starts with postgresql:", process.env.DATABASE_URL?.startsWith("postgresql://"));
+console.log(
+  "DATABASE_URL starts with postgresql:",
+  process.env.DATABASE_URL?.startsWith("postgresql://")
+);
 console.log("REDIS_URL exists:", !!process.env.REDIS_URL);
-console.log("UPSTASH_REDIS_REST_URL exists:", !!process.env.UPSTASH_REDIS_REST_URL);
-console.log("UPSTASH_REDIS_REST_TOKEN exists:", !!process.env.UPSTASH_REDIS_REST_TOKEN);
+console.log(
+  "UPSTASH_REDIS_REST_URL exists:",
+  !!process.env.UPSTASH_REDIS_REST_URL
+);
+console.log(
+  "UPSTASH_REDIS_REST_TOKEN exists:",
+  !!process.env.UPSTASH_REDIS_REST_TOKEN
+);
 
 async function testConnections() {
   // Test Redis using ioredis
@@ -18,9 +27,9 @@ async function testConnections() {
     const Redis = require("ioredis");
     const redis = new Redis(process.env.REDIS_URL, {
       lazyConnect: true,
-      tls: { rejectUnauthorized: false }
+      tls: { rejectUnauthorized: false },
     });
-    
+
     await redis.connect();
     await redis.set("test", "hello");
     const result = await redis.get("test");
@@ -38,7 +47,7 @@ async function testConnections() {
       url: process.env.UPSTASH_REDIS_REST_URL,
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
-    
+
     await redis.set("upstash-test", "hello");
     const result = await redis.get("upstash-test");
     console.log("✅ Upstash Redis working:", result);
@@ -52,14 +61,14 @@ async function testConnections() {
     // Import from server directory where Prisma client was generated
     const { PrismaClient } = require("./server/node_modules/@prisma/client");
     const prisma = new PrismaClient();
-    
+
     await prisma.$connect();
     console.log("✅ Database connected successfully");
-    
+
     // Try a simple query
     const userCount = await prisma.user.count();
     console.log("✅ Database query working, user count:", userCount);
-    
+
     await prisma.$disconnect();
   } catch (error) {
     console.log("❌ Database failed:", error.message);
