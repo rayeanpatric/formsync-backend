@@ -31,12 +31,10 @@ This directory contains comprehensive API test cases for the Collaborative Form 
 ## Environment Configuration
 
 ### Local Development
-
 - Set `baseUrl` to `http://localhost:3000` (default)
 - Ensure your local server is running on port 3000
 
 ### Production Testing
-
 - Change `baseUrl` to your production URL
 - Update `productionUrl` in environment variables
 - Enable `productionUrl` and disable `baseUrl` if needed
@@ -44,13 +42,11 @@ This directory contains comprehensive API test cases for the Collaborative Form 
 ## Test Structure
 
 ### 1. Health Check
-
 - Basic server health verification
 - **Endpoint**: `GET /health`
 - **Expected**: 200 status with `{status: "OK", timestamp: "..."}`
 
 ### 2. User Management
-
 - **Register Admin User**: Creates admin user for form creation tests
 - **Register Regular User**: Creates regular user for form filling tests
 - **Login Admin User**: Authenticates admin user
@@ -59,14 +55,12 @@ This directory contains comprehensive API test cases for the Collaborative Form 
 - **Get User by ID**: Retrieves specific user details
 
 ### 3. Form Management
-
 - **Create Form**: Creates a test form with multiple field types
 - **Get All Forms**: Retrieves all forms list
 - **Get Form by ID**: Retrieves specific form with fields
 - **Update Form**: Updates form title and fields
 
 ### 4. Form Responses
-
 - **Get Form Response (Empty)**: Gets response before any data is submitted
 - **Save Form Response**: Submits form data
 - **Get Form Response (With Data)**: Verifies submitted data
@@ -74,26 +68,22 @@ This directory contains comprehensive API test cases for the Collaborative Form 
 - **Get Form Responses (All)**: Gets all responses for a form
 
 ### 5. Error Handling Tests
-
 - **Invalid User Login**: Tests authentication failure
 - **Get Non-existent Form**: Tests 404 handling
 - **Create Form Without Required Fields**: Tests validation
 - **Register User with Existing Email**: Tests duplicate email handling
 
 ### 6. Cleanup
-
 - **Delete Test Form**: Removes test data
 
 ## Running Tests
 
 ### Individual Requests
-
 1. Select any request from the collection
 2. Click "Send"
 3. Check the "Test Results" tab for pass/fail status
 
 ### Full Collection Run
-
 1. Click on the collection name "Collaborative Form App API Tests"
 2. Click "Run" button
 3. Select all folders or specific test folders
@@ -105,7 +95,6 @@ This directory contains comprehensive API test cases for the Collaborative Form 
 Each test includes multiple assertions:
 
 ### Response Status Codes
-
 - Success operations: 200/201
 - Not found: 404
 - Validation errors: 400
@@ -113,14 +102,12 @@ Each test includes multiple assertions:
 - Server errors: 500
 
 ### Response Structure
-
 - All responses have `success` boolean field
 - Success responses include `data` field
 - Error responses include `message` field
 - Specific data structure validation for each endpoint
 
 ### Data Integrity
-
 - Created resources have required fields
 - Passwords are never returned in responses
 - User roles are correctly assigned
@@ -130,7 +117,6 @@ Each test includes multiple assertions:
 ## Expected Behavior
 
 ### User Registration/Login
-
 ```json
 {
   "success": true,
@@ -147,7 +133,6 @@ Each test includes multiple assertions:
 ```
 
 ### Form Creation
-
 ```json
 {
   "success": true,
@@ -172,7 +157,6 @@ Each test includes multiple assertions:
 ```
 
 ### Form Response
-
 ```json
 {
   "success": true,
@@ -194,18 +178,15 @@ Each test includes multiple assertions:
 ### Common Issues
 
 1. **Connection Refused**
-
    - Ensure server is running
    - Check baseUrl in environment
    - Verify port number
 
 2. **404 Not Found**
-
    - Check API endpoint paths
    - Verify route definitions in server
 
 3. **Test Failures**
-
    - Check server logs for errors
    - Verify database connection
    - Ensure test data is properly set up
@@ -216,7 +197,6 @@ Each test includes multiple assertions:
    - Ensure variables are set correctly
 
 ### Database State
-
 - Tests create and modify data
 - Run cleanup tests to remove test data
 - Some tests depend on previous test data (IDs)
@@ -225,7 +205,6 @@ Each test includes multiple assertions:
 ## Test Data
 
 The tests use these default values:
-
 - Admin email: `admin@example.com`
 - Regular user email: `test@example.com`
 - Test passwords: `admin123`, `user123`

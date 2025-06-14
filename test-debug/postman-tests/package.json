@@ -1,0 +1,15 @@
+{
+  "name": "postman-test-runner",
+  "version": "1.0.0",
+  "description": "Test runner for Collaborative Form App API",
+  "scripts": {
+    "test": "newman run collection.json -e environment.json",
+    "test-local": "newman run collection.json -e environment.json --env-var baseUrl=http://localhost:3000",
+    "test-production": "newman run collection.json -e environment.json --env-var baseUrl=https://base-backend-try-production.up.railway.app",
+    "test-html": "newman run collection.json -e environment.json -r html --reporter-html-export report.html",
+    "test-json": "newman run collection.json -e environment.json -r json --reporter-json-export report.json"
+  },
+  "devDependencies": {
+    "newman": "^6.0.0"
+  }
+}
