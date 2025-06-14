@@ -196,24 +196,43 @@ window.formFiller = (() => {
       fieldId: fieldId,
     });
   }
-
   /**
-   * Handle field value change
+   * Handle field value change with debouncing for better performance
    * @param {Event} event - Input change event
    */
+  let changeTimeouts = {}; // Store timeouts for each field
+
   function handleFieldChange(event) {
     const input = event.target;
     const fieldId = input.dataset.fieldId;
     const value =
       input.type === "number" ? parseFloat(input.value) : input.value;
 
-    // Emit field change to Socket.IO
-    window.app.state.socket.emit("field_change", {
-      formId: currentForm.id,
-      fieldId: fieldId,
-      value: value,
-      userName: window.app.state.currentUser.name,
-    });
+    // Clear existing timeout for this field
+    if (changeTimeouts[fieldId]) {
+      clearTimeout(changeTimeouts[fieldId]);
+    }
+
+    // 🚀 INSTANT visual feedback for the user
+    input.style.borderColor = "#4CAF50";
+    setTimeout(() => {
+      input.style.borderColor = "";
+    }, 300);
+
+    // Debounce the socket emission (500ms delay)
+    changeTimeouts[fieldId] = setTimeout(() => {
+      console.log(`⚡ Emitting field change for ${fieldId}:`, value);
+
+      // Emit field change to Socket.IO
+      window.app.state.socket.emit("field_change", {
+        formId: currentForm.id,
+        fieldId: fieldId,
+        value: value,
+        userName: window.app.state.currentUser.name,
+      });
+
+      delete changeTimeouts[fieldId];
+    }, 500);
   }
 
   /**
@@ -262,9 +281,8 @@ window.formFiller = (() => {
       );
     }
   }
-
   /**
-   * Setup Socket.IO listeners for real-time collaboration
+   * Setup Socket.IO listeners for real-time collaboration with performance monitoring
    */
   function setupSocketListeners() {
     // Remove any existing listeners first to prevent duplicates
@@ -272,16 +290,26 @@ window.formFiller = (() => {
     window.app.state.socket.off("field_update");
     window.app.state.socket.off("field_locked");
     window.app.state.socket.off("field_unlocked");
+    window.app.state.socket.off("pong");
+
+    console.log("🔄 Setting up socket listeners for real-time collaboration");
 
     // Listen for initial form state
     window.app.state.socket.on("form_state", ({ formId, response }) => {
+      console.log("📋 Received form state:", {
+        formId,
+        responseKeys: Object.keys(response),
+      });
       if (currentForm && currentForm.id === formId) {
         updateFormFields(response);
       }
     });
 
-    // Listen for field updates from other users
+    // Listen for field updates from other users (INSTANT)
     window.app.state.socket.on("field_update", ({ fieldId, value }) => {
+      console.log("⚡ Received field update:", { fieldId, value });
+      const startTime = performance.now();
+
       const input = document.querySelector(
         `.form-field[data-field-id="${fieldId}"]`
       );
@@ -289,43 +317,70 @@ window.formFiller = (() => {
         // Apply the value change
         input.value = value;
 
-        // Add update animation
+        // Add update animation with better visual feedback
         input.classList.add("updated");
+        input.style.backgroundColor = "#e8f5e8";
+        input.style.transition = "background-color 0.3s ease";
+
         setTimeout(() => {
           input.classList.remove("updated");
+          input.style.backgroundColor = "";
         }, 1000);
+
+        const endTime = performance.now();
+        console.log(
+          `✅ Field update applied in ${(endTime - startTime).toFixed(2)}ms`
+        );
       }
     });
 
-    // Listen for field locks
+    // Listen for field locks (INSTANT)
     window.app.state.socket.on("field_locked", ({ fieldId, lockedBy }) => {
+      console.log("🔒 Field locked:", { fieldId, lockedBy: lockedBy.userName });
+
       const input = document.querySelector(
         `.form-field[data-field-id="${fieldId}"]`
       );
       if (input) {
         input.classList.add("locked");
         input.disabled = true;
+        input.style.borderColor = "#ff9800";
+        input.style.backgroundColor = "#fff3cd";
 
-        // Add lock indicator
+        // Add lock indicator with better styling
         const fieldGroup = input.closest(".form-group");
         let lockIndicator = fieldGroup.querySelector(".field-lock-indicator");
         if (!lockIndicator) {
           lockIndicator = document.createElement("div");
           lockIndicator.className = "field-lock-indicator";
+          lockIndicator.style.cssText = `
+            color: #856404;
+            font-size: 12px;
+            font-style: italic;
+            margin-top: 2px;
+            padding: 2px 6px;
+            background: #fff3cd;
+            border-radius: 3px;
+            border: 1px solid #ffeaa7;
+          `;
           fieldGroup.appendChild(lockIndicator);
         }
-        lockIndicator.textContent = `${lockedBy.userName} is editing`;
+        lockIndicator.textContent = `🔒 ${lockedBy.userName} is editing`;
       }
     });
 
-    // Listen for field unlocks
+    // Listen for field unlocks (INSTANT)
     window.app.state.socket.on("field_unlocked", ({ fieldId }) => {
+      console.log("🔓 Field unlocked:", fieldId);
+
       const input = document.querySelector(
         `.form-field[data-field-id="${fieldId}"]`
       );
       if (input) {
         input.classList.remove("locked");
         input.disabled = false;
+        input.style.borderColor = "";
+        input.style.backgroundColor = "";
 
         // Remove lock indicator
         const fieldGroup = input.closest(".form-group");
@@ -335,6 +390,22 @@ window.formFiller = (() => {
         }
       }
     });
+
+    // Health check response for debugging
+    window.app.state.socket.on("pong", (stats) => {
+      console.log("🏥 Health check response:", stats);
+    });
+
+    // Send periodic health checks (every 30 seconds) when form is active
+    if (currentForm) {
+      const healthCheckInterval = setInterval(() => {
+        if (currentForm) {
+          window.app.state.socket.emit("ping", { formId: currentForm.id });
+        } else {
+          clearInterval(healthCheckInterval);
+        }
+      }, 30000);
+    }
   }
 
   /**

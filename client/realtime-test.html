@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Performance Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🚀 Real-time Performance Test</h1>
+
+    <div class="test-container">
+        <h3>Connection Status</h3>
+        <div id="status" class="status disconnected">❌ Disconnected</div>
+
+        <h3>Performance Stats</h3>
+        <div class="stats">
+            <div class="stat-card">
+                <div id="latency" class="stat-value">--</div>
+                <div class="stat-label">Latency (ms)</div>
+            </div>
+            <div class="stat-card">
+                <div id="messages-sent" class="stat-value">0</div>
+                <div class="stat-label">Messages Sent</div>
+            </div>
+            <div class="stat-card">
+                <div id="messages-received" class="stat-value">0</div>
+                <div class="stat-label">Messages Received</div>
+            </div>
+            <div class="stat-card">
+                <div id="transport" class="stat-value">--</div>
+                <div class="stat-label">Transport</div>
+            </div>
+        </div>
+
+        <h3>Actions</h3>
+        <button onclick="pingServer()">🏓 Ping Server</button>
+        <button onclick="simulateTyping()">⌨️ Simulate Typing</button>
+        <button onclick="clearLog()">🗑️ Clear Log</button>
+        <button onclick="exportLog()">📁 Export Log</button>
+    </div>
+
+    <div class="test-container">
+        <h3>Real-time Log</h3>
+        <div id="log" class="log">Initializing...\n</div>
+    </div>
+
+    <!-- Socket.IO will be loaded dynamically -->
+    <script src="js/config.js"></script>
+    <script>
+        // Dynamically load Socket.IO from server
+        const socketScript = document.createElement('script');
+        socketScript.src = window.CONFIG.SERVER_URL + '/socket.io/socket.io.js';
+        socketScript.onload = function () {
+            console.log('Socket.IO loaded successfully');
+            // Initialize the test after Socket.IO is loaded
+            initializeTest();
+        };
+        socketScript.onerror = function () {
+            console.error('Failed to load Socket.IO from server');
+            document.getElementById('status').textContent = 'Failed to load Socket.IO';
+        };
+        document.head.appendChild(socketScript);
+    </script>
+    <script>
+        function initializeTest() {
+            let socket;
+            let messagesSent = 0;
+            let messagesReceived = 0;
+            let startTime = 0;
+
+            // Get DOM elements
+            const statusEl = document.getElementById('status');
+            const latencyEl = document.getElementById('latency');
+            const messagesSentEl = document.getElementById('messages-sent');
+            const messagesReceivedEl = document.getElementById('messages-received');
+            const transportEl = document.getElementById('transport');
+            const logEl = document.getElementById('log');
+
+            function log(message) {
+                const timestamp = new Date().toISOString().substr(11, 8);
+                logEl.textContent += `[${timestamp}] ${message}\n`;
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+
+            function updateStats() {
+                messagesSentEl.textContent = messagesSent;
+                messagesReceivedEl.textContent = messagesReceived;
+            }
+
+            function initSocket() {
+                log('🔄 Initializing Socket.IO with WebSocket transport...');
+
+                socket = io(window.CONFIG.SERVER_URL, {
+                    transports: ['websocket'],
+                    timeout: 20000,
+                    compression: true,
+                    reconnection: true,
+                    reconnectionDelay: 1000,
+                    reconnectionAttempts: 5
+                });
+
+                socket.on('connect', () => {
+                    log('✅ Connected to server');
+                    log(`🔌 Socket ID: ${socket.id}`);
+                    log(`🚀 Transport: ${socket.io.engine.transport.name}`);
+
+                    statusEl.textContent = '✅ Connected';
+                    statusEl.className = 'status connected';
+                    transportEl.textContent = socket.io.engine.transport.name;
+                });
+
+                socket.on('disconnect', (reason) => {
+                    log(`❌ Disconnected: ${reason}`);
+                    statusEl.textContent = '❌ Disconnected';
+                    statusEl.className = 'status disconnected';
+                    transportEl.textContent = '--';
+                });
+
+                socket.on('reconnect', () => {
+                    log('🔄 Reconnected');
+                });
+
+                socket.on('connect_error', (error) => {
+                    log(`❌ Connection error: ${error.message}`);
+                });
+
+                // Listen for pong responses
+                socket.on('pong', (data) => {
+                    messagesReceived++;
+                    const latency = Date.now() - startTime;
+                    log(`🏓 Pong received - Latency: ${latency}ms`);
+                    log(`📊 Server stats: ${JSON.stringify(data)}`);
+                    latencyEl.textContent = latency;
+                    updateStats();
+                });
+
+                // Listen for any other events
+                socket.onAny((eventName, ...args) => {
+                    if (eventName !== 'pong') {
+                        messagesReceived++;
+                        log(`📨 Received event: ${eventName}`);
+                        updateStats();
+                    }
+                });
+            }
+
+            function pingServer() {
+                if (!socket || !socket.connected) {
+                    log('❌ Socket not connected');
+                    return;
+                }
+
+                startTime = Date.now();
+                messagesSent++;
+                socket.emit('ping', { formId: 'test-form-123' });
+                log('🏓 Ping sent...');
+                updateStats();
+            }
+
+            function simulateTyping() {
+                if (!socket || !socket.connected) {
+                    log('❌ Socket not connected');
+                    return;
+                }
+
+                const words = ['Hello', 'world', 'this', 'is', 'a', 'typing', 'simulation'];
+                let index = 0;
+
+                log('⌨️ Starting typing simulation...');
+
+                const typeInterval = setInterval(() => {
+                    if (index >= words.length) {
+                        clearInterval(typeInterval);
+                        log('✅ Typing simulation complete');
+                        return;
+                    }
+
+                    const word = words[index];
+                    messagesSent++;
+
+                    socket.emit('field_change', {
+                        formId: 'test-form-123',
+                        fieldId: 'test-field-1',
+                        value: words.slice(0, index + 1).join(' '),
+                        userName: 'Test User'
+                    });
+
+                    log(`⌨️ Typed: "${word}"`);
+                    updateStats();
+                    index++;
+                }, 500);
+            }
+
+            function clearLog() {
+                logEl.textContent = '';
+            }
+
+            function exportLog() {
+                const logContent = logEl.textContent;
+                const blob = new Blob([logContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `realtime-test-${Date.now()}.log`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }            // Initialize when page loads
+            document.addEventListener('DOMContentLoaded', () => {
+                initSocket();
+            });
+
+            // Auto-ping every 10 seconds to monitor latency
+            setInterval(() => {
+                if (socket && socket.connected) {
+                    pingServer();
+                }
+            }, 10000);
+
+            // Make functions available globally for button clicks
+            window.pingServer = pingServer;
+            window.startStressTest = startStressTest;
+            window.clearLog = clearLog;
+            window.exportLog = exportLog;
+        }
+    </script>
+</body>
+
+</html>

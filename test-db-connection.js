@@ -1,9 +1,28 @@
 // Test script for database connection
-require("dotenv").config();
+const path = require("path");
+const dotenv = require("dotenv");
+
+// Load environment variables from server directory
+const envPath = path.join(__dirname, "server", ".env");
+console.log("Loading environment from:", envPath);
+
+const result = dotenv.config({ path: envPath });
+if (result.error) {
+  console.error("Error loading .env file:", result.error);
+  process.exit(1);
+}
+
 const { PrismaClient } = require("@prisma/client");
 
 console.log("Environment variables loaded:");
 console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
+
+if (!process.env.DATABASE_URL) {
+  console.log("❌ DATABASE_URL not found in server/.env");
+  console.log("Please check your server/.env file configuration.");
+  process.exit(1);
+}
+
 console.log(
   "DATABASE_URL starts with postgresql://",
   process.env.DATABASE_URL.startsWith("postgresql://")

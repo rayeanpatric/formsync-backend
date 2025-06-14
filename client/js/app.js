@@ -40,17 +40,66 @@ const API = {
   RESPONSES: "/api/responses",
 };
 
-// Initialize Socket.IO
+// Initialize Socket.IO with optimized settings
 function initializeSocket() {
-  appState.socket = io();
-
-  // Socket event handlers
-  appState.socket.on("connect", () => {
-    console.log("Connected to server with ID:", appState.socket.id);
+  // 🚀 OPTIMIZED SOCKET.IO CLIENT CONFIGURATION
+  appState.socket = io({
+    // 🔥 FORCE WEBSOCKET-ONLY (matches server config)
+    transports: ["websocket"],
+    // ⚡ OPTIMIZED TIMEOUTS FOR REAL-TIME RESPONSIVENESS
+    timeout: 15000, // Reduced for faster connection detection
+    // 🗜️ ENABLE COMPRESSION
+    compression: true,
+    // 🔄 OPTIMIZED RECONNECTION SETTINGS
+    reconnection: true,
+    reconnectionDelay: 500, // Faster reconnection
+    reconnectionAttempts: 10, // More attempts
+    maxReconnectionAttempts: 10,
+    // ⚡ PERFORMANCE SETTINGS
+    forceNew: false,
+    upgrade: true,
+    rememberUpgrade: true,
   });
 
-  appState.socket.on("disconnect", () => {
-    console.log("Disconnected from server");
+  // 📊 SOCKET EVENT HANDLERS WITH PERFORMANCE MONITORING
+  appState.socket.on("connect", () => {
+    const transport = appState.socket.io.engine.transport.name;
+    console.log(`🚀 Connected to server with ID: ${appState.socket.id}`);
+    console.log(
+      `🔌 Transport: ${transport} ${transport === "websocket" ? "✅" : "⚠️"}`
+    );
+
+    if (transport !== "websocket") {
+      console.warn(
+        "⚠️ Not using WebSocket! This may affect real-time performance."
+      );
+    }
+  });
+
+  appState.socket.on("disconnect", (reason) => {
+    console.log("❌ Disconnected from server:", reason);
+    // Show user-friendly message for connection issues
+    if (reason === "transport close" || reason === "transport error") {
+      console.log("🔄 Attempting to reconnect...");
+    }
+  });
+
+  appState.socket.on("reconnect", (attemptNumber) => {
+    console.log(`🔄 Reconnected to server (attempt ${attemptNumber})`);
+  });
+
+  appState.socket.on("reconnect_error", (error) => {
+    console.error("❌ Reconnection error:", error.message);
+  });
+
+  appState.socket.on("connect_error", (error) => {
+    console.error("❌ Connection error:", error.message);
+    // Fallback advice for WebSocket issues
+    if (error.message.includes("websocket")) {
+      console.log(
+        "💡 If WebSocket connections fail, check your firewall/proxy settings"
+      );
+    }
   });
   appState.socket.on("user_joined", ({ users, newUser }) => {
     console.log("User joined:", newUser);

@@ -7,7 +7,7 @@
     <title>Collaborative Form Filler</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- Socket.IO will be loaded dynamically from server -->
 </head>
 
 <body>
@@ -165,11 +165,46 @@
             </div>
         </div>
     </div> <!-- Load scripts in the correct order -->
-    <script src="js/auth.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/form-builder.js"></script>
-    <script src="js/form-filler-enhanced.js"></script>
-    <script src="js/script-init.js"></script>
+    <script src="js/config.js"></script>
+    <script>
+        // Dynamically load Socket.IO from server
+        const socketScript = document.createElement('script');
+        socketScript.src = window.CONFIG.SERVER_URL + '/socket.io/socket.io.js';
+        socketScript.onload = function () {
+            // Load other scripts after Socket.IO is loaded
+            const scripts = [
+                'js/auth.js',
+                'js/app.js',
+                'js/form-builder.js',
+                'js/form-filler-enhanced.js',
+                'js/script-init.js'
+            ];
+
+            let loadedCount = 0;
+            scripts.forEach((src, index) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = () => {
+                    loadedCount++;
+                    if (loadedCount === scripts.length) {
+                        console.log('All scripts loaded successfully');
+                    }
+                };
+                document.head.appendChild(script);
+            });
+        };
+        socketScript.onerror = function () {
+            console.error('Failed to load Socket.IO from server');
+            // Load scripts anyway for basic functionality
+            const scripts = ['js/auth.js', 'js/app.js', 'js/form-builder.js', 'js/form-filler-enhanced.js', 'js/script-init.js'];
+            scripts.forEach(src => {
+                const script = document.createElement('script');
+                script.src = src;
+                document.head.appendChild(script);
+            });
+        };
+        document.head.appendChild(socketScript);
+    </script>
 </body>
 
 </html>

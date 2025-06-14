@@ -5,28 +5,46 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
 
+// Configure environment variables FIRST
+dotenv.config({ path: path.join(__dirname, "../.env") });
+
 // Import routes
 const formRoutes = require("./routes/formRoutes");
 const userRoutes = require("./routes/userRoutes");
 const responseRoutes = require("./routes/responseRoutes");
 
-// Configure environment variables
-dotenv.config();
-
 // Initialize Express app
 const app = express();
 const server = http.createServer(app);
+
+// 🚀 OPTIMIZED SOCKET.IO CONFIGURATION FOR REAL-TIME PERFORMANCE
 const io = socketIo(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   },
+  // 🔥 FORCE WEBSOCKET-ONLY (no polling fallback for maximum performance)
+  transports: ["websocket"],
+  // ⚡ OPTIMIZED TIMEOUTS FOR REAL-TIME RESPONSIVENESS
+  pingTimeout: 30000, // Reduced from 60s for faster disconnect detection
+  pingInterval: 10000, // Reduced from 25s for more frequent heartbeats
+  // 🗜️ ENABLE COMPRESSION FOR BETTER PERFORMANCE
+  compression: true,
+  // 📦 ALLOW LARGER PAYLOADS FOR FORM DATA
+  maxHttpBufferSize: 1e6,
+  // 🔄 CONNECTION SETTINGS
+  allowEIO3: true,
+  // 🛡️ SECURITY SETTINGS
+  serveClient: false,
+  // ⚡ PERFORMANCE SETTINGS
+  connectTimeout: 45000,
 });
+
+console.log("🚀 Socket.IO server configured for maximum real-time performance");
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
@@ -34,12 +52,15 @@ app.use("/api/forms", formRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/responses", responseRoutes);
 
-// Socket.IO handling
-require("./services/socketService")(io);
+// Socket.IO handling - USE OPTIMIZED SERVICE
+require("./socket/socketService-optimized")(io);
 
 // Default route
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
+  res.json({
+    message: "Server is running",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Error handling middleware (must be after all routes)
