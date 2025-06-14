@@ -43,9 +43,8 @@ async function handleLogin(event) {
 
   const submitBtn = event.target.querySelector('button[type="submit"]');
   setLoadingState(submitBtn, true);
-
   try {
-    const response = await fetch("/api/users/login", {
+    const response = await fetch(`${CONFIG.SERVER_URL}/api/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +96,7 @@ async function handleSignup(event) {
   setLoadingState(submitBtn, true);
 
   try {
-    const response = await fetch("/api/users/register", {
+    const response = await fetch(`${CONFIG.SERVER_URL}/api/users/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

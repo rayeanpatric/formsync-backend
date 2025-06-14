@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🚂 Railway Backend Connection Test</h1>
+    
+    <div class="info test-result">
+        <strong>Instructions:</strong>
+        <ol>
+            <li>Go to your Railway dashboard</li>
+            <li>Click on your service</li>
+            <li>Go to "Settings" → "Domains"</li>
+            <li>Copy the public URL (should look like: https://web-production-XXXX.up.railway.app)</li>
+            <li>Paste it in the input below and test</li>
+        </ol>
+    </div>
+
+    <div>
+        <label for="railwayUrl">Railway URL:</label><br>
+        <input type="text" id="railwayUrl" placeholder="https://web-production-XXXX.up.railway.app" style="width: 400px; padding: 5px;">
+        <br><br>
+        <button onclick="testConnection()">Test Connection</button>
+        <button onclick="testAPI()">Test API</button>
+        <button onclick="testSocket()">Test Socket.IO</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        async function testConnection() {
+            const url = document.getElementById('railwayUrl').value.trim();
+            if (!url) {
+                log('Please enter a Railway URL', 'error');
+                return;
+            }
+
+            log('🔄 Testing basic connection...', 'info');
+            
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    log(`✅ Connection successful! Status: ${response.status}`, 'success');
+                } else {
+                    log(`⚠️ Connection returned status: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAPI() {
+            const url = document.getElementById('railwayUrl').value.trim();
+            if (!url) {
+                log('Please enter a Railway URL', 'error');
+                return;
+            }
+
+            log('🔄 Testing API endpoints...', 'info');
+            
+            try {
+                // Test forms endpoint
+                const formsResponse = await fetch(`${url}/api/forms`);
+                if (formsResponse.ok) {
+                    const forms = await formsResponse.json();
+                    log(`✅ Forms API working! Found ${forms.length} forms`, 'success');
+                } else {
+                    log(`❌ Forms API failed: ${formsResponse.status}`, 'error');
+                }
+
+                // Test users endpoint
+                const usersResponse = await fetch(`${url}/api/users`);
+                if (usersResponse.ok) {
+                    const users = await usersResponse.json();
+                    log(`✅ Users API working! Found ${users.length} users`, 'success');
+                } else {
+                    log(`❌ Users API failed: ${usersResponse.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ API test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testSocket() {
+            const url = document.getElementById('railwayUrl').value.trim();
+            if (!url) {
+                log('Please enter a Railway URL', 'error');
+                return;
+            }
+
+            log('🔄 Testing Socket.IO connection...', 'info');
+
+            // Load Socket.IO dynamically
+            const script = document.createElement('script');
+            script.src = `${url}/socket.io/socket.io.js`;
+            script.onload = () => {
+                const socket = io(url);
+                
+                socket.on('connect', () => {
+                    log(`✅ Socket.IO connected! ID: ${socket.id}`, 'success');
+                    socket.disconnect();
+                });
+
+                socket.on('connect_error', (error) => {
+                    log(`❌ Socket.IO connection failed: ${error.message}`, 'error');
+                });
+            };
+            script.onerror = () => {
+                log('❌ Failed to load Socket.IO script', 'error');
+            };
+            document.head.appendChild(script);
+        }
+    </script>
+</body>
+</html>

@@ -43,7 +43,7 @@ const API = {
 // Initialize Socket.IO with optimized settings
 function initializeSocket() {
   // 🚀 OPTIMIZED SOCKET.IO CLIENT CONFIGURATION
-  appState.socket = io({
+  appState.socket = io(CONFIG.SERVER_URL, {
     // 🔥 FORCE WEBSOCKET-ONLY (matches server config)
     transports: ["websocket"],
     // ⚡ OPTIMIZED TIMEOUTS FOR REAL-TIME RESPONSIVENESS
@@ -210,7 +210,7 @@ function showView(viewId) {
 // Fetch all users
 async function fetchUsers() {
   try {
-    const response = await fetch(API.USERS);
+    const response = await fetch(`${CONFIG.SERVER_URL}${API.USERS}`);
     const result = await response.json();
 
     if (result.success) {
@@ -229,7 +229,7 @@ async function fetchUsers() {
 // Fetch all forms
 async function fetchForms() {
   try {
-    const response = await fetch(API.FORMS);
+    const response = await fetch(`${CONFIG.SERVER_URL}${API.FORMS}`);
     const result = await response.json();
 
     if (result.success) {
@@ -436,7 +436,7 @@ async function deleteForm(formId) {
   try {
     if (!formId) return;
 
-    const response = await fetch(`${API.FORMS}/${formId}`, {
+    const response = await fetch(`${CONFIG.SERVER_URL}${API.FORMS}/${formId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
