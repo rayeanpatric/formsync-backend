@@ -246,42 +246,44 @@ module.exports = function (io) {
     // 🚪 USER LEAVES FORM - EXPLICIT CLEANUP
     socket.on("leave_form", async ({ formId, userId, userName }) => {
       console.log(`👋 ${userName} explicitly leaving form ${formId}`);
-      
+
       try {
         // Remove user from form room
         socket.leave(`form:${formId}`);
-        
+
         // Clean up active users
         const usersKey = `users:${formId}`;
         let activeUsers = (await getCache(usersKey)) || [];
-        
-        const userIndex = activeUsers.findIndex((u) => u.userId === userId || u.socketId === socket.id);
+
+        const userIndex = activeUsers.findIndex(
+          (u) => u.userId === userId || u.socketId === socket.id
+        );
         if (userIndex !== -1) {
           const user = activeUsers[userIndex];
           activeUsers.splice(userIndex, 1);
-          
+
           if (activeUsers.length > 0) {
             await setCache(usersKey, activeUsers, 3600);
           } else {
             await deleteCache(usersKey);
             await deleteCache(`formdata:${formId}`);
           }
-          
+
           console.log(`👋 ${user.userName} left form ${formId} (explicit)`);
-          
+
           // Broadcast user left
           io.to(`form:${formId}`).emit("user_left", {
             users: activeUsers,
             leftUser: { userId: user.userId, userName: user.userName },
           });
-          
+
           io.to(`form:${formId}`).emit("activity_log", {
             message: `left the form`,
             userName: user.userName,
             timestamp: new Date().toISOString(),
             type: "user_left",
           });
-          
+
           // Clean up any field locks by this user
           // Note: In a full Redis setup, you'd scan for locks by userId
           // For now, we'll let locks expire naturally (30 second TTL)

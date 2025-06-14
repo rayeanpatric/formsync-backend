@@ -4,6 +4,7 @@
 const appState = {
   currentUser: null,
   currentView: "home-view",
+  currentFormId: null,
   socket: null,
   forms: [],
   users: [],
@@ -146,24 +147,27 @@ function updateActiveUsersList(users) {
       }
 
       activeUsersList.appendChild(userElement);
-    }  });
+    }
+  });
 }
 
 // Leave the current form when navigating away
 function leaveCurrentForm() {
-  if (appState.socket && appState.currentView === "form-view" && appState.currentUser) {
-    // Try to get the current form ID from the form view
-    const formIdElement = document.querySelector("[data-form-id]");
-    const formId = formIdElement?.getAttribute("data-form-id") || window.formFiller?.currentForm?.id;
-    
-    if (formId) {
-      console.log(`👋 Leaving form ${formId}`);
-      appState.socket.emit("leave_form", {
-        formId: formId,
-        userId: appState.currentUser.id,
-        userName: appState.currentUser.name,
-      });
-    }
+  if (
+    appState.socket &&
+    appState.currentView === "form-view" &&
+    appState.currentUser &&
+    appState.currentFormId
+  ) {
+    console.log(`👋 Leaving form ${appState.currentFormId}`);
+    appState.socket.emit("leave_form", {
+      formId: appState.currentFormId,
+      userId: appState.currentUser.id,
+      userName: appState.currentUser.name,
+    });
+
+    // Clear the current form ID
+    appState.currentFormId = null;
   }
 }
 
@@ -666,11 +670,17 @@ window.app = {
 
 // Leave the current form when navigating away
 function leaveCurrentForm() {
-  if (appState.socket && appState.currentView === "form-view" && appState.currentUser) {
+  if (
+    appState.socket &&
+    appState.currentView === "form-view" &&
+    appState.currentUser
+  ) {
     // Try to get the current form ID from the form view
     const formIdElement = document.querySelector("[data-form-id]");
-    const formId = formIdElement?.getAttribute("data-form-id") || window.formFiller?.currentForm?.id;
-    
+    const formId =
+      formIdElement?.getAttribute("data-form-id") ||
+      window.formFiller?.currentForm?.id;
+
     if (formId) {
       console.log(`👋 Leaving form ${formId}`);
       appState.socket.emit("leave_form", {
