@@ -1,35 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Login Debug</title>
+    <title>🔍 Production Login Debug</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 30px auto;
+            max-width: 1000px;
+            margin: 20px auto;
             padding: 20px;
             background: #f5f5f5;
         }
+
         .container {
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
+
         .debug-section {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 5px;
             padding: 15px;
             margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
         }
-        .success { border-left: 5px solid #28a745; }
-        .error { border-left: 5px solid #dc3545; }
-        .warning { border-left: 5px solid #ffc107; }
-        .info { border-left: 5px solid #17a2b8; }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
         button {
             background: #007bff;
             color: white;
@@ -39,321 +71,437 @@
             cursor: pointer;
             margin: 5px;
         }
-        button:hover { background: #0056b3; }
-        .log {
-            background: #000;
-            color: #00ff00;
-            border-radius: 5px;
-            padding: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 12px;
-            white-space: pre-wrap;
+
+        button:hover {
+            background: #0056b3;
         }
-        input, select {
+
+        .login-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
-            padding: 8px;
-            margin: 5px 0;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            box-sizing: border-box;
         }
-        .test-form {
+
+        .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>🔍 Production Login Debug Tool</h1>
-        <p>Debug login issues in production deployment</p>
-        
-        <div class="debug-section info">
-            <h3>Current Environment</h3>
-            <div id="envInfo">Loading...</div>
-        </div>
-    </div>
+    <h1>🔍 Production Login Debug Tool</h1>
 
     <div class="container">
-        <h2>🔧 API Tests</h2>
-        <div>
-            <button onclick="testBackendHealth()">🏥 Test Backend Health</button>
-            <button onclick="testCORS()">🌐 Test CORS</button>
-            <button onclick="testUsersAPI()">👥 Test Users API</button>
-            <button onclick="testLoginAPI()">🔐 Test Login API</button>
-        </div>
-        
-        <div class="debug-section" id="apiResults">
-            <h3>API Test Results</h3>
-            <div id="apiLog">Click test buttons to see results...</div>
-        </div>
+        <h2>🌐 Environment Check</h2>
+        <div id="envStatus" class="status info">Checking environment...</div>
+        <div id="envDetails" class="debug-section">Loading environment details...</div>
+        <button onclick="checkEnvironment()">🔄 Refresh Environment</button>
     </div>
 
-    <div class="container">
-        <h2>🔐 Login Test</h2>
-        <div class="test-form">
-            <div>
-                <label>Email:</label>
-                <input type="email" id="testEmail" value="test@example.com" placeholder="Enter test email">
+    <div class="grid">
+        <div class="container">
+            <h2>🔧 Backend API Test</h2>
+            <div id="apiStatus" class="status warning">Not tested</div>
+            <div id="apiDetails" class="debug-section">Click "Test APIs" to check backend connectivity...</div>
+            <button onclick="testAPIs()">🔬 Test APIs</button>
+        </div>
+
+        <div class="container">
+            <h2>🔐 Authentication Test</h2>
+            <div id="authStatus" class="status warning">Not tested</div>
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="testEmail">Email:</label>
+                    <input type="email" id="testEmail" value="test@example.com" />
+                </div>
+                <div class="form-group">
+                    <label for="testPassword">Password:</label>
+                    <input type="password" id="testPassword" value="password123" />
+                </div>
+                <button onclick="testLogin()">🔐 Test Login</button>
+                <button onclick="testRegister()">📝 Test Register</button>
             </div>
-            <div>
-                <label>Password:</label>
-                <input type="password" id="testPassword" value="password123" placeholder="Enter test password">
-            </div>
-        </div>
-        <div>
-            <button onclick="testLogin()">🔐 Test Login</button>
-            <button onclick="testLoginDetailed()">🔍 Detailed Login Test</button>
-        </div>
-        
-        <div class="debug-section" id="loginResults">
-            <h3>Login Test Results</h3>
-            <div id="loginLog">Enter credentials and click test...</div>
+            <div id="authDetails" class="debug-section">Login test results will appear here...</div>
         </div>
     </div>
 
     <div class="container">
-        <h2>📊 Debug Log</h2>
+        <h2>🔌 Socket.IO Test</h2>
+        <div id="socketStatus" class="status warning">Not tested</div>
+        <div id="socketDetails" class="debug-section">Click "Test Socket.IO" to check real-time connectivity...</div>
+        <button onclick="testSocketIO()">🔌 Test Socket.IO</button>
+    </div>
+
+    <div class="container">
+        <h2>📋 Full Debug Log</h2>
+        <div id="fullLog" class="debug-section">Debug log will appear here...</div>
         <button onclick="clearLog()">🗑️ Clear Log</button>
-        <div id="debugLog" class="log">Debug log will appear here...</div>
+        <button onclick="exportLog()">📁 Export Log</button>
     </div>
 
     <script src="js/config.js"></script>
     <script>
-        const envInfoEl = document.getElementById('envInfo');
-        const apiLogEl = document.getElementById('apiLog');
-        const loginLogEl = document.getElementById('loginLog');
-        const debugLogEl = document.getElementById('debugLog');
+        // Debug logging
+        const fullLogEl = document.getElementById('fullLog');
+        const envStatusEl = document.getElementById('envStatus');
+        const envDetailsEl = document.getElementById('envDetails');
+        const apiStatusEl = document.getElementById('apiStatus');
+        const apiDetailsEl = document.getElementById('apiDetails');
+        const authStatusEl = document.getElementById('authStatus');
+        const authDetailsEl = document.getElementById('authDetails');
+        const socketStatusEl = document.getElementById('socketStatus');
+        const socketDetailsEl = document.getElementById('socketDetails');
 
-        function log(message, type = 'info') {
-            const timestamp = new Date().toISOString().substr(11, 12);
-            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅ ' : type === 'warning' ? '⚠️ ' : 'ℹ️ ';
-            debugLogEl.textContent += `[${timestamp}] ${prefix}${message}\n`;
-            debugLogEl.scrollTop = debugLogEl.scrollHeight;
+        function log(message, level = 'info') {
+            const timestamp = new Date().toISOString();
+            const prefix = {
+                'error': '❌',
+                'success': '✅',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            }[level] || 'ℹ️';
+
+            const logMessage = `[${timestamp}] ${prefix} ${message}`;
+            fullLogEl.textContent += logMessage + '\n';
+            fullLogEl.scrollTop = fullLogEl.scrollHeight;
+
+            console.log(logMessage);
         }
 
-        function updateApiLog(message, type = 'info') {
-            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
-            apiLogEl.innerHTML += `<div class="${type}">${prefix} ${message}</div>`;
+        function updateStatus(element, message, type) {
+            element.textContent = message;
+            element.className = `status ${type}`;
         }
 
-        function updateLoginLog(message, type = 'info') {
-            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
-            loginLogEl.innerHTML += `<div class="${type}">${prefix} ${message}</div>`;
-        }
+        async function checkEnvironment() {
+            log('🌐 Checking production environment...');
 
-        // Initialize environment info
-        function initEnvInfo() {
-            envInfoEl.innerHTML = `
-                <strong>Current URL:</strong> ${window.location.href}<br>
-                <strong>Hostname:</strong> ${window.location.hostname}<br>
-                <strong>Protocol:</strong> ${window.location.protocol}<br>
-                <strong>Backend URL:</strong> ${CONFIG.SERVER_URL}<br>
-                <strong>Debug Mode:</strong> ${CONFIG.DEBUG}<br>
-                <strong>User Agent:</strong> ${navigator.userAgent.substring(0, 100)}...
-            `;
-            log(`Environment initialized - Backend: ${CONFIG.SERVER_URL}`);
-        }
-
-        async function testBackendHealth() {
-            log('Testing backend health...');
             try {
-                const response = await fetch(`${CONFIG.SERVER_URL}/health`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    updateApiLog(`Backend health OK: ${JSON.stringify(data)}`, 'success');
-                    log(`Backend health check passed: ${response.status}`, 'success');
-                } else {
-                    updateApiLog(`Backend health failed: ${response.status} ${response.statusText}`, 'error');
-                    log(`Backend health check failed: ${response.status}`, 'error');
+                // Wait for CONFIG to load
+                if (typeof CONFIG === 'undefined') {
+                    setTimeout(checkEnvironment, 500);
+                    return;
                 }
-            } catch (error) {
-                updateApiLog(`Backend health error: ${error.message}`, 'error');
-                log(`Backend health error: ${error.message}`, 'error');
-            }
-        }
 
-        async function testCORS() {
-            log('Testing CORS...');
-            try {
-                const response = await fetch(`${CONFIG.SERVER_URL}/health`, {
-                    method: 'OPTIONS',
-                });
-                
-                updateApiLog(`CORS preflight: ${response.status}`, response.ok ? 'success' : 'warning');
-                log(`CORS preflight response: ${response.status}`, response.ok ? 'success' : 'warning');
-                
-                // Check CORS headers
-                const corsHeaders = {
-                    'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
-                    'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
-                    'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers'),
-                    'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials'),
+                const envInfo = {
+                    'Current URL': window.location.href,
+                    'Hostname': window.location.hostname,
+                    'Protocol': window.location.protocol,
+                    'Port': window.location.port || 'default',
+                    'CONFIG.SERVER_URL': CONFIG.SERVER_URL,
+                    'CONFIG.DEBUG': CONFIG.DEBUG,
+                    'User Agent': navigator.userAgent.substring(0, 100) + '...',
+                    'Local Storage Keys': Object.keys(localStorage).join(', ') || 'none',
+                    'Current User': localStorage.getItem('currentUser') ? 'exists' : 'not found'
                 };
-                
-                updateApiLog(`CORS Headers: ${JSON.stringify(corsHeaders, null, 2)}`, 'info');
-                log(`CORS headers: ${JSON.stringify(corsHeaders)}`);
-                
+
+                let envText = '🌐 PRODUCTION ENVIRONMENT CHECK\n';
+                envText += '================================\n\n';
+
+                Object.entries(envInfo).forEach(([key, value]) => {
+                    envText += `${key}: ${value}\n`;
+                });
+
+                envText += '\n🔍 CORS & Security Headers:\n';
+                envText += 'Same-Origin Policy: ' + (window.location.protocol === 'https:' ? 'HTTPS ✅' : 'HTTP ⚠️') + '\n';
+
+                envDetailsEl.textContent = envText;
+
+                if (CONFIG.SERVER_URL.includes('railway.app')) {
+                    updateStatus(envStatusEl, '✅ Production environment detected', 'success');
+                    log('✅ Production environment configured correctly', 'success');
+                } else {
+                    updateStatus(envStatusEl, '⚠️ Environment may not be production', 'warning');
+                    log('⚠️ SERVER_URL does not point to Railway', 'warning');
+                }
+
             } catch (error) {
-                updateApiLog(`CORS test error: ${error.message}`, 'error');
-                log(`CORS test error: ${error.message}`, 'error');
+                updateStatus(envStatusEl, '❌ Environment check failed', 'error');
+                log(`❌ Environment check error: ${error.message}`, 'error');
+                envDetailsEl.textContent = `Error: ${error.message}`;
             }
         }
 
-        async function testUsersAPI() {
-            log('Testing users API...');
+        async function testAPIs() {
+            log('🔬 Testing backend APIs...');
+            updateStatus(apiStatusEl, '🔄 Testing APIs...', 'info');
+
+            let apiResults = '🔬 BACKEND API TESTS\n';
+            apiResults += '===================\n\n';
+
             try {
-                const response = await fetch(`${CONFIG.SERVER_URL}/api/users`, {
+                // Test health endpoint
+                log('Testing health endpoint...');
+                const healthResponse = await fetch(`${CONFIG.SERVER_URL}/api/health`, {
                     method: 'GET',
                     headers: {
-                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     }
                 });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    updateApiLog(`Users API OK: Found ${data.data ? data.data.length : 0} users`, 'success');
-                    log(`Users API working: ${data.data ? data.data.length : 0} users`, 'success');
-                } else {
-                    const errorText = await response.text();
-                    updateApiLog(`Users API failed: ${response.status} ${errorText}`, 'error');
-                    log(`Users API failed: ${response.status} ${errorText}`, 'error');
-                }
-            } catch (error) {
-                updateApiLog(`Users API error: ${error.message}`, 'error');
-                log(`Users API error: ${error.message}`, 'error');
-            }
-        }
 
-        async function testLoginAPI() {
-            log('Testing login API endpoint...');
-            try {
-                const response = await fetch(`${CONFIG.SERVER_URL}/api/users/login`, {
-                    method: 'POST',
+                apiResults += `Health Check (${CONFIG.SERVER_URL}/api/health):\n`;
+                apiResults += `  Status: ${healthResponse.status} ${healthResponse.statusText}\n`;
+                apiResults += `  OK: ${healthResponse.ok}\n\n`;
+
+                if (healthResponse.ok) {
+                    log('✅ Health endpoint working', 'success');
+                } else {
+                    log(`❌ Health endpoint failed: ${healthResponse.status}`, 'error');
+                }
+
+                // Test users endpoint
+                log('Testing users endpoint...');
+                const usersResponse = await fetch(`${CONFIG.SERVER_URL}/api/users`, {
+                    method: 'GET',
                     headers: {
-                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({})
+                    }
                 });
-                
-                const data = await response.text();
-                updateApiLog(`Login endpoint response: ${response.status} - ${data.substring(0, 200)}`, 
-                    response.status === 400 ? 'info' : 'warning');
-                log(`Login endpoint test: ${response.status} - ${data.substring(0, 100)}...`);
-                
+
+                apiResults += `Users API (${CONFIG.SERVER_URL}/api/users):\n`;
+                apiResults += `  Status: ${usersResponse.status} ${usersResponse.statusText}\n`;
+                apiResults += `  OK: ${usersResponse.ok}\n`;
+
+                if (usersResponse.ok) {
+                    const usersData = await usersResponse.json();
+                    apiResults += `  Users found: ${usersData.data ? usersData.data.length : 0}\n`;
+                    log(`✅ Users API working: ${usersData.data ? usersData.data.length : 0} users`, 'success');
+                } else {
+                    const errorText = await usersResponse.text();
+                    apiResults += `  Error: ${errorText.substring(0, 200)}\n`;
+                    log(`❌ Users API failed: ${usersResponse.status}`, 'error');
+                }
+                apiResults += '\n';
+
+                // Test CORS
+                apiResults += 'CORS Check:\n';
+                apiResults += `  Origin: ${window.location.origin}\n`;
+                apiResults += `  Target: ${CONFIG.SERVER_URL}\n`;
+                apiResults += `  Cross-Origin: ${window.location.origin !== CONFIG.SERVER_URL}\n\n`;
+
+                if (healthResponse.ok && usersResponse.ok) {
+                    updateStatus(apiStatusEl, '✅ All APIs working', 'success');
+                } else {
+                    updateStatus(apiStatusEl, '❌ Some APIs failed', 'error');
+                }
+
             } catch (error) {
-                updateApiLog(`Login API error: ${error.message}`, 'error');
-                log(`Login API error: ${error.message}`, 'error');
+                log(`❌ API test error: ${error.message}`, 'error');
+                updateStatus(apiStatusEl, '❌ API test failed', 'error');
+                apiResults += `\n❌ FETCH ERROR: ${error.message}\n`;
+                apiResults += `This usually indicates:\n`;
+                apiResults += `- CORS issues\n`;
+                apiResults += `- Network connectivity problems\n`;
+                apiResults += `- Backend server not running\n`;
             }
+
+            apiDetailsEl.textContent = apiResults;
         }
 
         async function testLogin() {
-            const email = document.getElementById('testEmail').value;
-            const password = document.getElementById('testPassword').value;
-            
-            log(`Testing login with email: ${email}`);
-            updateLoginLog(`Testing login: ${email}`, 'info');
-            
-            try {
-                const response = await fetch(`${CONFIG.SERVER_URL}/api/users/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    updateLoginLog(`Login successful! User: ${data.data?.name || data.user?.name}`, 'success');
-                    log(`Login successful for ${email}`, 'success');
-                } else {
-                    updateLoginLog(`Login failed: ${data.message || 'Unknown error'}`, 'error');
-                    log(`Login failed: ${data.message || 'Unknown error'}`, 'error');
-                }
-                
-            } catch (error) {
-                updateLoginLog(`Login error: ${error.message}`, 'error');
-                log(`Login error: ${error.message}`, 'error');
-            }
-        }
+            log('🔐 Testing login...');
+            updateStatus(authStatusEl, '🔄 Testing login...', 'info');
 
-        async function testLoginDetailed() {
             const email = document.getElementById('testEmail').value;
             const password = document.getElementById('testPassword').value;
-            
-            log(`Detailed login test for: ${email}`);
-            updateLoginLog(`Starting detailed login test...`, 'info');
-            
+
+            let authResults = '🔐 LOGIN TEST\n';
+            authResults += '============\n\n';
+            authResults += `Email: ${email}\n`;
+            authResults += `Password: ${'*'.repeat(password.length)}\n`;
+            authResults += `Endpoint: ${CONFIG.SERVER_URL}/api/users/login\n\n`;
+
             try {
-                // First check if backend is reachable
-                updateLoginLog(`Step 1: Testing backend connectivity...`, 'info');
-                const healthResponse = await fetch(`${CONFIG.SERVER_URL}/health`);
-                if (!healthResponse.ok) {
-                    throw new Error(`Backend not reachable: ${healthResponse.status}`);
-                }
-                updateLoginLog(`✅ Backend is reachable`, 'success');
-                
-                // Then test login
-                updateLoginLog(`Step 2: Attempting login...`, 'info');
                 const loginResponse = await fetch(`${CONFIG.SERVER_URL}/api/users/login`, {
                     method: 'POST',
                     headers: {
-                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ email, password })
                 });
-                
-                updateLoginLog(`Step 3: Login response status: ${loginResponse.status}`, 'info');
-                
-                const responseText = await loginResponse.text();
-                updateLoginLog(`Step 4: Raw response: ${responseText.substring(0, 500)}`, 'info');
-                
-                try {
-                    const data = JSON.parse(responseText);
-                    if (data.success) {
-                        updateLoginLog(`✅ Login successful!`, 'success');
-                        updateLoginLog(`User data: ${JSON.stringify(data.data || data.user, null, 2)}`, 'success');
+
+                authResults += `Response Status: ${loginResponse.status} ${loginResponse.statusText}\n`;
+                authResults += `Response OK: ${loginResponse.ok}\n\n`;
+
+                if (loginResponse.ok) {
+                    const loginData = await loginResponse.json();
+                    authResults += `Success: ${loginData.success}\n`;
+                    authResults += `Message: ${loginData.message || 'No message'}\n`;
+
+                    if (loginData.success && (loginData.data || loginData.user)) {
+                        const userData = loginData.data || loginData.user;
+                        authResults += `User ID: ${userData.id}\n`;
+                        authResults += `User Name: ${userData.name}\n`;
+                        authResults += `User Email: ${userData.email}\n`;
+                        authResults += `User Role: ${userData.role}\n\n`;
+
+                        // Test storing in localStorage
+                        localStorage.setItem('currentUser', JSON.stringify(userData));
+                        authResults += `✅ User data stored in localStorage\n`;
+
+                        updateStatus(authStatusEl, '✅ Login successful', 'success');
+                        log('✅ Login test passed', 'success');
                     } else {
-                        updateLoginLog(`❌ Login failed: ${data.message}`, 'error');
-                        updateLoginLog(`Full response: ${JSON.stringify(data, null, 2)}`, 'error');
+                        authResults += `❌ Login failed: ${loginData.message}\n`;
+                        updateStatus(authStatusEl, '❌ Login failed', 'error');
+                        log(`❌ Login failed: ${loginData.message}`, 'error');
                     }
-                } catch (parseError) {
-                    updateLoginLog(`❌ Response not valid JSON: ${parseError.message}`, 'error');
-                    updateLoginLog(`Raw response: ${responseText}`, 'error');
+                } else {
+                    const errorText = await loginResponse.text();
+                    authResults += `❌ HTTP Error: ${errorText}\n`;
+                    updateStatus(authStatusEl, '❌ Login request failed', 'error');
+                    log(`❌ Login request failed: ${loginResponse.status}`, 'error');
                 }
-                
+
             } catch (error) {
-                updateLoginLog(`❌ Detailed login test failed: ${error.message}`, 'error');
-                log(`Detailed login test error: ${error.message}`, 'error');
+                authResults += `❌ NETWORK ERROR: ${error.message}\n`;
+                authResults += `This indicates:\n`;
+                authResults += `- CORS blocking the request\n`;
+                authResults += `- Backend server unreachable\n`;
+                authResults += `- Network connectivity issues\n`;
+
+                updateStatus(authStatusEl, '❌ Login test failed', 'error');
+                log(`❌ Login test error: ${error.message}`, 'error');
+            }
+
+            authDetailsEl.textContent = authResults;
+        }
+
+        async function testRegister() {
+            log('📝 Testing registration...');
+
+            const testUser = {
+                name: 'Test User',
+                email: 'test@example.com',
+                password: 'password123',
+                adminRequest: false
+            };
+
+            try {
+                const response = await fetch(`${CONFIG.SERVER_URL}/api/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testUser)
+                });
+
+                const result = await response.json();
+                log(`📝 Registration test: ${result.success ? 'Success' : 'Failed - ' + result.message}`);
+
+            } catch (error) {
+                log(`❌ Registration test error: ${error.message}`, 'error');
             }
         }
 
-        function clearLog() {
-            debugLogEl.textContent = '';
-            apiLogEl.innerHTML = 'Click test buttons to see results...';
-            loginLogEl.innerHTML = 'Enter credentials and click test...';
+        async function testSocketIO() {
+            log('🔌 Testing Socket.IO...');
+            updateStatus(socketStatusEl, '🔄 Testing Socket.IO...', 'info');
+
+            let socketResults = '🔌 SOCKET.IO TEST\n';
+            socketResults += '================\n\n';
+
+            try {
+                // First test if client script is available
+                const scriptResponse = await fetch(`${CONFIG.SERVER_URL}/socket.io/socket.io.js`);
+                socketResults += `Client Script (${CONFIG.SERVER_URL}/socket.io/socket.io.js):\n`;
+                socketResults += `  Status: ${scriptResponse.status} ${scriptResponse.statusText}\n`;
+                socketResults += `  Available: ${scriptResponse.ok ? 'Yes' : 'No'}\n\n`;
+
+                if (scriptResponse.ok) {
+                    log('✅ Socket.IO client script available', 'success');
+
+                    // If io is available, test connection
+                    if (typeof io !== 'undefined') {
+                        socketResults += 'Connection Test:\n';
+
+                        const socket = io(CONFIG.SERVER_URL, {
+                            transports: ['polling', 'websocket'],
+                            timeout: 10000
+                        });
+
+                        socket.on('connect', () => {
+                            socketResults += '  ✅ Connected successfully\n';
+                            socketResults += `  Socket ID: ${socket.id}\n`;
+                            updateStatus(socketStatusEl, '✅ Socket.IO working', 'success');
+                            log('✅ Socket.IO connection successful', 'success');
+                            socket.disconnect();
+                        });
+
+                        socket.on('connect_error', (error) => {
+                            socketResults += `  ❌ Connection failed: ${error.message}\n`;
+                            updateStatus(socketStatusEl, '❌ Socket.IO connection failed', 'error');
+                            log(`❌ Socket.IO connection error: ${error.message}`, 'error');
+                        });
+
+                    } else {
+                        socketResults += '  ⚠️ Socket.IO client not loaded on this page\n';
+                        updateStatus(socketStatusEl, '⚠️ Socket.IO client not loaded', 'warning');
+                    }
+                } else {
+                    socketResults += '  ❌ Client script not available\n';
+                    updateStatus(socketStatusEl, '❌ Socket.IO client script missing', 'error');
+                    log('❌ Socket.IO client script not served', 'error');
+                }
+
+            } catch (error) {
+                socketResults += `❌ Socket.IO test error: ${error.message}\n`;
+                updateStatus(socketStatusEl, '❌ Socket.IO test failed', 'error');
+                log(`❌ Socket.IO test error: ${error.message}`, 'error');
+            }
+
+            socketDetailsEl.textContent = socketResults;
         }
 
-        // Initialize on page load
+        function clearLog() {
+            fullLogEl.textContent = '';
+        }
+
+        function exportLog() {
+            const logContent = fullLogEl.textContent;
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `production-debug-${new Date().toISOString().slice(0, 19)}.log`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-run checks on page load
         setTimeout(() => {
-            initEnvInfo();
-            log('Production login debug tool loaded');
+            log('🚀 Production Login Debug Tool loaded');
+            checkEnvironment();
         }, 1000);
     </script>
 </body>
+
 </html>

@@ -32,10 +32,35 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /**
+ * Check if CONFIG is available, if not wait for it
+ */
+function waitForConfig() {
+  return new Promise((resolve) => {
+    if (typeof CONFIG !== 'undefined') {
+      resolve();
+      return;
+    }
+    
+    // Wait for CONFIG to be loaded
+    const checkConfig = () => {
+      if (typeof CONFIG !== 'undefined') {
+        resolve();
+      } else {
+        setTimeout(checkConfig, 100);
+      }
+    };
+    checkConfig();
+  });
+}
+
+/**
  * Handle login form submission
  */
 async function handleLogin(event) {
   event.preventDefault();
+
+  // Wait for CONFIG to be available
+  await waitForConfig();
 
   const formData = new FormData(event.target);
   const email = formData.get("email");
@@ -78,6 +103,9 @@ async function handleLogin(event) {
  */
 async function handleSignup(event) {
   event.preventDefault();
+
+  // Wait for CONFIG to be available
+  await waitForConfig();
 
   const formData = new FormData(event.target);
   const name = formData.get("name");
