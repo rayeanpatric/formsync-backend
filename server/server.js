@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 
 // Configure environment variables FIRST
-dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config({ path: path.join(__dirname, ".env"), override: true });
 
 // Import routes
 const formRoutes = require("./src/routes/formRoutes");
@@ -63,8 +63,14 @@ app.use("/api/forms", formRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/responses", responseRoutes);
 
-// Socket.IO handling - USE OPTIMIZED SERVICE
-require("./src/socket/socketService-redis")(io);
+// Socket.IO handling - Use Redis service (now that Redis is configured)
+if (process.env.REDIS_URL && process.env.REDIS_URL.includes("upstash.io")) {
+  console.log("🔴 Using Redis service for real-time features");
+  require("./src/socket/socketService-redis")(io);
+} else {
+  console.log("📝 Using in-memory service for real-time features");
+  require("./src/socket/socketService")(io);
+}
 
 // Error handling middleware (must be after all routes)
 const errorHandler = require("./src/middlewares/errorHandler");

@@ -14,10 +14,11 @@ Welcome to the comprehensive documentation for the Collaborative Form Filling Sy
 
 ### 🏗️ **Setup & Development**
 
-| Document                                    | Description                                 | Best For              |
-| ------------------------------------------- | ------------------------------------------- | --------------------- |
-| **[Build Guide](BUILD.md)**                 | Detailed build and development instructions | New developers        |
-| **[Deployment Guide](DEPLOYMENT_GUIDE.md)** | Production deployment to Vercel/Render      | DevOps and deployment |
+| Document                                                  | Description                                  | Best For                   |
+| --------------------------------------------------------- | -------------------------------------------- | -------------------------- |
+| **[Build Guide](BUILD.md)**                               | Detailed build and development instructions  | New developers             |
+| **[Deployment Guide](DEPLOYMENT_GUIDE.md)**               | Production deployment to Vercel/Render       | DevOps and deployment      |
+| **[Database Connection Fix](DATABASE_CONNECTION_FIX.md)** | Complete database connection troubleshooting | Database connection issues |
 
 ### ⚡ **Performance & Optimization**
 

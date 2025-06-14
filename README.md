@@ -162,20 +162,41 @@ This application is configured to be deployed to Vercel. Follow these steps:
 
 ## Quick Start
 
-### Option 1: Using Setup Scripts (Recommended)
+### Option 1: Automated Setup (Recommended)
 
-**Windows:**
+**🚀 One-command setup with automatic environment validation:**
 
-```bash
-.\setup.bat
-npm run dev
+**Windows (PowerShell):**
+
+```powershell
+.\setup-fullstack.ps1
 ```
 
-**Linux/Mac:**
+**Windows (Command Prompt):**
+
+```batch
+setup-fullstack.bat
+```
+
+**Linux/macOS:**
 
 ```bash
-chmod +x setup.sh
-./setup.sh
+chmod +x setup-fullstack.sh
+./setup-fullstack.sh
+```
+
+**✅ What the setup script does:**
+
+- Installs all dependencies (root, server, client)
+- Creates and validates `.env` configuration
+- Clears conflicting environment variables
+- Sets up PostgreSQL database with Prisma
+- Seeds demo data
+- Validates database connectivity
+
+**🎯 After setup, start development:**
+
+```bash
 npm run dev
 ```
 
@@ -490,13 +511,17 @@ docker-compose up --build --force-recreate
 
 ## Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the server directory:
 
 ```env
 PORT=3000
 NODE_ENV=development
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://username:password@hostname:port/database?sslmode=require"
+CLIENT_URL="http://localhost:3001"
+REDIS_URL="redis://localhost:6379"
 ```
+
+> **Important**: Update the `DATABASE_URL` with your actual PostgreSQL connection string (e.g., from Neon, Railway, or other PostgreSQL provider).
 
 ## Sample Data
 
@@ -608,6 +633,40 @@ To manually test the UI components:
 4. Test form creation (admin), form filling, and real-time collaboration
 
 ## Troubleshooting
+
+### Database Connection Issues
+
+**❌ "Invalid DATABASE_URL format" Error:**
+
+This error occurs when the environment variables aren't loaded correctly. **Fixed in latest version with automatic environment override.**
+
+**✅ Solution:**
+
+1. Use the automated setup scripts (recommended):
+
+   ```bash
+   .\setup-fullstack.ps1    # Windows PowerShell
+   setup-fullstack.bat      # Windows Command Prompt
+   ./setup-fullstack.sh     # Linux/macOS
+   ```
+
+2. Or manually clear environment variables:
+   ```powershell
+   # PowerShell
+   $env:DATABASE_URL = $null
+   npm run dev:server
+   ```
+
+**🔍 Test Database Connection:**
+
+```bash
+node test-db-connection.js
+```
+
+**📋 Environment File Location:**
+
+- **Correct**: `server/.env` (in server directory)
+- **Incorrect**: `.env` (in root directory)
 
 ### Common Issues
 
