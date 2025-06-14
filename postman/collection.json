@@ -1,0 +1,889 @@
+{
+  "info": {
+    "name": "Collaborative Form App API Tests",
+    "description": "Comprehensive API test suite for the Collaborative Form Application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Health check returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Health check has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "    pm.expect(jsonData).to.have.property('timestamp');",
+                  "    pm.expect(jsonData.status).to.eql('OK');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Register Admin User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User registration successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Registration response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('name');",
+                  "    pm.expect(jsonData.data).to.have.property('email');",
+                  "    pm.expect(jsonData.data).to.have.property('role');",
+                  "    pm.expect(jsonData.data).to.not.have.property('password');",
+                  "});",
+                  "",
+                  "pm.test('Save admin user ID', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.success && jsonData.data && jsonData.data.id) {",
+                  "        pm.environment.set('adminUserId', jsonData.data.id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"admin123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/users/register",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["users", "register"]
+            }
+          }
+        },
+        {
+          "name": "Register Regular User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User registration successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Registration response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.have.property('role', 'user');",
+                  "});",
+                  "",
+                  "pm.test('Save regular user ID', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.success && jsonData.data && jsonData.data.id) {",
+                  "        pm.environment.set('regularUserId', jsonData.data.id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/users/register",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["users", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login Admin User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Login response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('name');",
+                  "    pm.expect(jsonData.data).to.have.property('email');",
+                  "    pm.expect(jsonData.data).to.have.property('role');",
+                  "    pm.expect(jsonData.data).to.not.have.property('password');",
+                  "});",
+                  "",
+                  "pm.test('User has admin role', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.role).to.eql('admin');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/users/login",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["users", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Regular User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Login response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData.data.role).to.eql('user');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/users/login",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["users", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get users successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Users response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Users have required properties', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.length > 0) {",
+                  "        var user = jsonData.data[0];",
+                  "        pm.expect(user).to.have.property('id');",
+                  "        pm.expect(user).to.have.property('name');",
+                  "        pm.expect(user).to.have.property('email');",
+                  "        pm.expect(user).to.have.property('role');",
+                  "        pm.expect(user).to.not.have.property('password');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/users",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get user by ID successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('User response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('name');",
+                  "    pm.expect(jsonData.data).to.have.property('email');",
+                  "    pm.expect(jsonData.data).to.have.property('role');",
+                  "    pm.expect(jsonData.data).to.not.have.property('password');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/users/{{adminUserId}}",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["users", "{{adminUserId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Form Management",
+      "item": [
+        {
+          "name": "Create Form",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Form creation successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Form creation response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('title');",
+                  "    pm.expect(jsonData.data).to.have.property('createdById');",
+                  "    pm.expect(jsonData.data).to.have.property('createdAt');",
+                  "    pm.expect(jsonData.data).to.have.property('updatedAt');",
+                  "});",
+                  "",
+                  "pm.test('Save form ID for later tests', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.success && jsonData.data && jsonData.data.id) {",
+                  "        pm.environment.set('testFormId', jsonData.data.id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Survey Form\",\n  \"createdById\": \"{{adminUserId}}\",\n  \"fields\": [\n    {\n      \"label\": \"Full Name\",\n      \"type\": \"text\",\n      \"required\": true,\n      \"order\": 1\n    },\n    {\n      \"label\": \"Age\",\n      \"type\": \"number\",\n      \"required\": true,\n      \"order\": 2\n    },\n    {\n      \"label\": \"Gender\",\n      \"type\": \"dropdown\",\n      \"required\": true,\n      \"order\": 3,\n      \"options\": [\"Male\", \"Female\", \"Other\"]\n    },\n    {\n      \"label\": \"Comments\",\n      \"type\": \"text\",\n      \"required\": false,\n      \"order\": 4\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/forms",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["forms"]
+            }
+          }
+        },
+        {
+          "name": "Get All Forms",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get forms successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Forms response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Forms have required properties', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.length > 0) {",
+                  "        var form = jsonData.data[0];",
+                  "        pm.expect(form).to.have.property('id');",
+                  "        pm.expect(form).to.have.property('title');",
+                  "        pm.expect(form).to.have.property('createdById');",
+                  "        pm.expect(form).to.have.property('createdAt');",
+                  "        pm.expect(form).to.have.property('fields');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/forms",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["forms"]
+            }
+          }
+        },
+        {
+          "name": "Get Form by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get form by ID successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Form response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('title');",
+                  "    pm.expect(jsonData.data).to.have.property('fields');",
+                  "    pm.expect(jsonData.data.fields).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Form fields have correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.fields.length > 0) {",
+                  "        var field = jsonData.data.fields[0];",
+                  "        pm.expect(field).to.have.property('id');",
+                  "        pm.expect(field).to.have.property('label');",
+                  "        pm.expect(field).to.have.property('type');",
+                  "        pm.expect(field).to.have.property('required');",
+                  "        pm.expect(field).to.have.property('order');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/forms/{{testFormId}}",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["forms", "{{testFormId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Form",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Form update successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Update response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('title');",
+                  "});",
+                  "",
+                  "pm.test('Form title was updated', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.title).to.eql('Updated Test Survey Form');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Test Survey Form\",\n  \"fields\": [\n    {\n      \"label\": \"Full Name\",\n      \"type\": \"text\",\n      \"required\": true,\n      \"order\": 1\n    },\n    {\n      \"label\": \"Age\",\n      \"type\": \"number\",\n      \"required\": true,\n      \"order\": 2\n    },\n    {\n      \"label\": \"Gender\",\n      \"type\": \"dropdown\",\n      \"required\": true,\n      \"order\": 3,\n      \"options\": [\"Male\", \"Female\", \"Other\", \"Prefer not to say\"]\n    },\n    {\n      \"label\": \"Email\",\n      \"type\": \"text\",\n      \"required\": true,\n      \"order\": 4\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/forms/{{testFormId}}",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["forms", "{{testFormId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Form Responses",
+      "item": [
+        {
+          "name": "Get Form Response (Empty)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get empty response successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Empty response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData).to.have.property('response');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/responses/{{testFormId}}",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["responses", "{{testFormId}}"]
+            }
+          }
+        },
+        {
+          "name": "Save Form Response",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Save response successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Save response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('formId');",
+                  "    pm.expect(jsonData.data).to.have.property('response');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Full Name\": \"John Doe\",\n  \"Age\": 25,\n  \"Gender\": \"Male\",\n  \"Email\": \"john.doe@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/responses/{{testFormId}}",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["responses", "{{testFormId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Form Response (With Data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get response with data successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains submitted data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData.data).to.have.property('response');",
+                  "    var responseData = typeof jsonData.data.response === 'string' ? JSON.parse(jsonData.data.response) : jsonData.data.response;",
+                  "    pm.expect(responseData).to.have.property('Full Name', 'John Doe');",
+                  "    pm.expect(responseData).to.have.property('Age', 25);",
+                  "    pm.expect(responseData).to.have.property('Gender', 'Male');",
+                  "    pm.expect(responseData).to.have.property('Email', 'john.doe@example.com');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/responses/{{testFormId}}",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["responses", "{{testFormId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Response Field",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Update field successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Update field response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"Jane Smith\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/responses/{{testFormId}}/fullname",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["responses", "{{testFormId}}", "fullname"]
+            }
+          }
+        },
+        {
+          "name": "Get Form Responses (All)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get all responses successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('All responses have correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/forms/{{testFormId}}/responses",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["forms", "{{testFormId}}", "responses"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Handling Tests",
+      "item": [
+        {
+          "name": "Invalid User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid login returns 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('Invalid login has error structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', false);",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalid@example.com\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/users/login",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["users", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Non-existent Form",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Non-existent form returns 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('404 response has error structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', false);",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/forms/non-existent-id",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["forms", "non-existent-id"]
+            }
+          }
+        },
+        {
+          "name": "Create Form Without Required Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Missing fields returns 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Validation error has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', false);",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.message).to.include('Missing required fields');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fields\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/forms",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["forms"]
+            }
+          }
+        },
+        {
+          "name": "Register User with Existing Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Duplicate email returns 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Duplicate email error has correct message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', false);",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.message).to.include('already exists');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate User\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/users/register",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["users", "register"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cleanup",
+      "item": [
+        {
+          "name": "Delete Test Form",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Form deletion successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Delete response has correct structure', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/forms/{{testFormId}}",
+              "host": ["{{baseUrl}}{{apiPrefix}}"],
+              "path": ["forms", "{{testFormId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}"
+    },
+    {
+      "key": "apiPrefix",
+      "value": "{{apiPrefix}}"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "id": "collaborative-form-app-env",
+  "name": "Collaborative Form App Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "description": "Base URL for local development",
+      "enabled": true
+    },
+    {
+      "key": "productionUrl",
+      "value": "https://base-backend-try-production.up.railway.app",
+      "description": "Production URL on Railway",
+      "enabled": false
+    },
+    {
+      "key": "apiPrefix",
+      "value": "/api",
+      "description": "API prefix for all endpoints",
+      "enabled": true
+    },
+    {
+      "key": "testUserId",
+      "value": "",
+      "description": "Test user ID for form creation",
+      "enabled": true
+    },
+    {
+      "key": "testFormId",
+      "value": "",
+      "description": "Test form ID for testing",
+      "enabled": true
+    },
+    {
+      "key": "adminUserId",
+      "value": "",
+      "description": "Admin user ID",
+      "enabled": true
+    },
+    {
+      "key": "regularUserId",
+      "value": "",
+      "description": "Regular user ID",
+      "enabled": true
+    },
+    {
+      "key": "testEmail",
+      "value": "test@example.com",
+      "description": "Test email for user registration",
+      "enabled": true
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@example.com",
+      "description": "Admin email for testing",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
