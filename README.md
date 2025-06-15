@@ -55,7 +55,14 @@ REDIS_URL="your-redis-url"
 
 ## 🌐 Deployment
 
-- **Frontend:** Deploy to Vercel
+- **Frontend:** Deploy to Vercel [https://proactively-backend-one.vercel.app/](https://proactively-backend-one.vercel.app/)
 - **Backend:** Deploy to Railway
 - **Database:** Neon PostgreSQL
 - **Cache:** Upstash Redis
+
+## 🔗 External Link
+
+- Project Link: [https://github.com/rayeanpatric/provital-backend](https://github.com/rayeanpatric/provital-backend)
+- Quick Demo: [Google Drive](https://drive.google.com/file/d/1s_7mQYqrhP_1aIFScp9pyfXJsrbWi7RV/view?usp=sharing)
+
+***Made with*** ❤️ ***by [Rayean Patric](https://github.com/rayeanpatric)***
