@@ -721,7 +721,7 @@ docker-compose up --build
 
 ## License
 
-ISC License - See package.json for details
+MIT License
 
 ## Contributing
 
