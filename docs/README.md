@@ -1,33 +1,21 @@
-# 📚 Documentation Index
+# 📚 Documentation
 
-Welcome to the comprehensive documentation for the Collaborative Form Filling System! This directory contains all the detailed guides and technical documentation.
+Technical documentation for the Collaborative Form System.
 
-## 📖 Documentation Overview
+## 📖 Available Guides
 
-### 🚀 **Getting Started**
+- **[BUILD.md](BUILD.md)** - Build and development setup
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Production deployment guide
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Technical implementation details
+- **[PASSWORD_HASHING_IMPLEMENTATION.md](PASSWORD_HASHING_IMPLEMENTATION.md)** - Security implementation
+- **[PERFORMANCE_OPTIMIZATION_GUIDE.md](PERFORMANCE_OPTIMIZATION_GUIDE.md)** - Performance tips
+- **[REALTIME-OPTIMIZATION-GUIDE.md](REALTIME-OPTIMIZATION-GUIDE.md)** - Real-time feature optimization
+- **[POSTMAN_TESTING.md](POSTMAN_TESTING.md)** - API testing guide
+- **[DATABASE_CONNECTION_FIX.md](DATABASE_CONNECTION_FIX.md)** - Database troubleshooting
 
-| Document                                          | Description                                        | Best For                         |
-| ------------------------------------------------- | -------------------------------------------------- | -------------------------------- |
-| **[Migration Notes](MIGRATION_NOTES.md)**         | Complete migration guide from old to new structure | Existing users upgrading         |
-| **[Restructure Summary](RESTRUCTURE_SUMMARY.md)** | Technical details of fullstack restructure         | Developers understanding changes |
-| **[Cleanup Complete](CLEANUP_COMPLETE.md)**       | Summary of cleanup and organization                | Project maintainers              |
+## 🚀 Quick Links
 
-### 🏗️ **Setup & Development**
-
-| Document                                                  | Description                                  | Best For                   |
-| --------------------------------------------------------- | -------------------------------------------- | -------------------------- |
-| **[Build Guide](BUILD.md)**                               | Detailed build and development instructions  | New developers             |
-| **[Deployment Guide](DEPLOYMENT_GUIDE.md)**               | Production deployment to Vercel/Render       | DevOps and deployment      |
-| **[Database Connection Fix](DATABASE_CONNECTION_FIX.md)** | Complete database connection troubleshooting | Database connection issues |
-
-### ⚡ **Performance & Optimization**
-
-| Document                                                                | Description                          | Best For                       |
-| ----------------------------------------------------------------------- | ------------------------------------ | ------------------------------ |
-| **[Performance Optimization Guide](PERFORMANCE_OPTIMIZATION_GUIDE.md)** | Database and system performance tips | Performance troubleshooting    |
-| **[Real-time Optimization Guide](REALTIME-OPTIMIZATION-GUIDE.md)**      | Socket.IO and Redis optimizations    | Real-time feature optimization |
-
-### 🔧 **Implementation Details**
+For testing and debugging, see the `test-debug/` directory in the project root.
 
 | Document                                                                  | Description                              | Best For                          |
 | ------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------- |
