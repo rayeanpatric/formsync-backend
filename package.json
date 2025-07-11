@@ -20,8 +20,7 @@
     "prisma:generate": "cd server && npm run prisma:generate",
     "prisma:migrate": "cd server && npm run prisma:migrate",
     "prisma:seed": "cd server && npm run prisma:seed",
-    "prisma:reset": "cd server && npm run prisma:reset",
-    "db:check": "cd server && node ../test-db-connection.js"
+    "prisma:reset": "cd server && npm run prisma:reset"
   },
   "keywords": [
     "collaborative",
