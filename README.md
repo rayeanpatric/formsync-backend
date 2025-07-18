@@ -6,7 +6,7 @@ A real-time collaborative form application with user authentication and live edi
 
 ```bash
 # Clone the repository
-git clone https://github.com/rayeanpatric/formsync-backend
+git clone https://github.com/rayeanpatric/formsync-backend.git
 cd formsync-backend
 
 # Install dependencies for both client and server
