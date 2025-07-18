@@ -1,0 +1,38 @@
+# fly.toml for formsync-backend
+app = "formsync-backend"  # Change if already taken
+
+primary_region = "sin"  # Singapore; you can use "maa" for Chennai, "ams" for Amsterdam, etc.
+
+[build]
+  dockerfile = "Dockerfile"  # Path to Dockerfile inside server/
+
+[env]
+  CLIENT_URL = "https://formsync-backend.vercel.app/"
+  DATABASE_URL = "postgresql://neondb_owner:npg_jpbF5x0hvQGC@ep-icy-sound-a1q58rky-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+  NODE_ENV = "production"
+  PORT = "8080"
+  REDIS_URL = "redis://default:Ab7-AAIjcDE5NGUyYjYxYjIxYjU0MTFiOGQ5ZWVjYzA3YTM0N2E0NXAxMA@blessed-meerkat-48894.upstash.io:6379"
+  UPSTASH_REDIS_REST_TOKEN = "Ab7-AAIjcDE5NGUyYjYxYjIxYjU0MTFiOGQ5ZWVjYzA7YTM0N2E0NXAxMA"
+  UPSTASH_REDIS_REST_URL = "https://blessed-meerkat-48894.upstash.io"
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+    grace_period = "10s"
